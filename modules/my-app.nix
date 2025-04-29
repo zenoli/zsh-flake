@@ -4,11 +4,11 @@ with lib;
 
 let
   cfg = config.programs.my-app;
-  myApp = pkgs.writeShellApplication {
+  createMyApp = greeting: pkgs.writeShellApplication {
     name = "my-app";
     runtimeInputs = [ pkgs.cowsay ];
     text = ''
-      cowsay foo
+      cowsay ${greeting}
     '';
   };
 
@@ -16,9 +16,13 @@ let
 in {
   options.programs.my-app = {
     enable = mkEnableOption "My custom app";
+    greeting = mkOption {
+      type = types.str;
+      default = "Hello!";
+    };
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ myApp ];
+    home.packages = [ (createMyApp cfg.greeting) ];
   };
 }
