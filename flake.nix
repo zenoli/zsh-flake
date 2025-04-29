@@ -15,6 +15,7 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in 
   {
+    ## PACKAGE
     packages.${system}.default = pkgs.writeShellApplication {
       name = "my-app";
       runtimeInputs = [ pkgs.cowsay ];
@@ -22,5 +23,7 @@
         cowsay foo
       '';
     };
+    ## HOME MANAGER
+    homeManagerModules.myApp = import ./modules/my-app.nix;
   };
 }
