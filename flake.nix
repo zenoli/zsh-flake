@@ -9,11 +9,12 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager }: {
-
-    packages.x86_64-linux.blubb = nixpkgs.legacyPackages.x86_64-linux.hello;
-
-    packages.x86_64-linux.default = self.packages.x86_64-linux.hello;
-
+  outputs = { self, nixpkgs, home-manager }: 
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in 
+  {
+    packages.${system}.my-app = pkgs.hello;
   };
 }
