@@ -15,6 +15,12 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in 
   {
-    packages.${system}.my-app = pkgs.hello;
+    packages.${system}.default = pkgs.writeShellApplication {
+      name = "my-app";
+      runtimeInputs = [ pkgs.cowsay ];
+      text = ''
+        cowsay foo
+      '';
+    };
   };
 }
