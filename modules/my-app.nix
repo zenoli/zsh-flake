@@ -3,18 +3,10 @@
 with lib;
 
 let
-  cfg = config.programs.my-app;
-  createMyApp = greeting: pkgs.writeShellApplication {
-    name = "my-app";
-    runtimeInputs = [ pkgs.cowsay ];
-    text = ''
-      cowsay ${greeting}
-    '';
-  };
-
-
+  cfg = config.programs.myApp;
+  myApp = pkgs.callPackage ../packages/my-app.nix { greeting = cfg.greeting; };
 in {
-  options.programs.my-app = {
+  options.programs.myApp = {
     enable = mkEnableOption "My custom app";
     greeting = mkOption {
       type = types.str;
@@ -23,6 +15,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ (createMyApp cfg.greeting) ];
+    home.packages = [ myApp ];
   };
 }

@@ -13,17 +13,29 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      myApp = pkgs.callPackage ./packages/my-app.nix {};
     in 
   {
     ## PACKAGE
-    packages.${system}.default = pkgs.writeShellApplication {
-      name = "my-app";
-      runtimeInputs = [ pkgs.cowsay ];
-      text = ''
-        cowsay foo
-      '';
-    };
+    packages.${system}.default = myApp; 
     ## HOME MANAGER
+    homeConfigurations.testuser = home-manager.lib.homeManagerConfiguration {
+      pkgs = import nixpkgs { inherit system; };
+      modules = [
+        ./modules/my-app.nix
+        {
+          home = {
+            username = "testuser";
+            homeDirectory = "/home/testuser";
+            stateVersion = "24.11";
+          };
+          programs.myApp = {
+            enable = true;
+            greeting = "Bar";
+          };
+        }
+      ];
+    };
     homeManagerModules.myApp = import ./modules/my-app.nix;
   };
 }
