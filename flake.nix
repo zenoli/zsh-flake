@@ -23,19 +23,10 @@
       pkgs = import nixpkgs { inherit system; };
       modules = [
         ./modules/my-app.nix
-        {
-          home = {
-            username = "testuser";
-            homeDirectory = "/home/testuser";
-            stateVersion = "24.11";
-          };
-          programs.myApp = {
-            enable = true;
-            greeting = "Bar";
-          };
-        }
+        ./modules/test-user.nix
       ];
     };
     homeManagerModules.myApp = import ./modules/my-app.nix;
+    devShells.${system}.default = import ./dev-shells/shell.nix { inherit pkgs; };
   };
 }
