@@ -14,10 +14,20 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       myApp = pkgs.callPackage ./packages/my-app.nix {};
+      zenoZsh = pkgs.callPackage ./zeno-zsh.nix {};
     in 
   {
+    ## APPS
+    apps.${system}.default = {
+      type = "app";
+      program = "${self.packages.${system}.zenoZsh}/bin/zsh";
+    };
+
     ## PACKAGE
-    packages.${system}.default = myApp; 
+    packages.${system} = {
+      default = myApp; 
+      inherit zenoZsh;
+    };
     ## HOME MANAGER
     homeConfigurations.testuser = home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgs { inherit system; };
