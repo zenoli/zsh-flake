@@ -8,8 +8,9 @@ function load {
 }
 
 autoload -U compinit; compinit
-load plugins/zsh-vi-mode.zsh
-load plugins/fzf-tab.zsh
+# load plugins/zsh-vi-mode.zsh
+# load plugins/fzf-tab.zsh
+source $ZSH_PLUGINS
 
 eval "$(starship init zsh)"
 source <(fzf --zsh)
