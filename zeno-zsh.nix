@@ -12,11 +12,32 @@
   zsh-autopair
 }:
 let 
+  pluginSpecs = [
+    {
+      name = "fzf-tab";
+      plugin = zsh-fzf-tab;
+      config = "";
+    }
+    {
+      name = "zsh-vi-mode";
+      plugin = zsh-vi-mode;
+      config = ''
+      zvm_after_init_commands+=('source <(fzf --zsh)')
+      '';
+    }
+  ];
+  pluginStr = builtins.map 
+    (spec: ''
+    ##########################
+    ## ${spec.name}
+    ##########################
+    source ${spec.plugin.src}/${spec.name}.plugin.zsh
+    zvm_after_init_commands+=('source <(fzf --zsh)')
+    '')
+    pluginSpecs;
   zshPlugins = writeText "zsh-plugins"
     ''
-    source ${zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
-    source ${zsh-vi-mode}/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
-    zvm_after_init_commands+=('source <(fzf --zsh)')
+    ${builtins.concatStringsSep "\n" pluginStr}
     '';
 in
   symlinkJoin {
@@ -31,7 +52,6 @@ in
     postBuild = ''
       cp -r $src $out/src
       echo "out dir is $out"
-      # cp ${zshPlugins} $out/${zshPlugins.name}
       echo zsh-autopair: ${zsh-autopair} >> $out/tmp.txt
       wrapProgram $out/bin/zsh \
         --set ZDOTDIR $out/src \
