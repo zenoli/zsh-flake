@@ -5,6 +5,7 @@
   writeText,
   makeWrapper,
   starship,
+  stdenv,
   symlinkJoin,
   zsh,
   zsh-fzf-tab,
@@ -40,23 +41,15 @@ let
     ${builtins.concatStringsSep "\n" pluginStr}
     '';
 in
-  symlinkJoin {
+  stdenv.mkDerivation {
     name = "zeno-zsh";
-    paths = [ 
-      zsh 
-      zsh-vi-mode 
-      zsh-fzf-tab 
-    ];
-    src = ./src;
-    nativeBuildInputs = [ makeWrapper ];
+    src = ./zdotdir;
+    nativeBuildInputs = [ makeWrapper zsh ];
     postBuild = ''
-      cp -r $src $out/src
-      echo "out dir is $out"
-      echo zsh-autopair: ${zsh-autopair} >> $out/tmp.txt
-      wrapProgram $out/bin/zsh \
-        --set ZDOTDIR $out/src \
-        --set STARSHIP_CONFIG $out/src/starship/pastel-powerline.toml \
-        --set SHARE $out/share \
+      mkdir $out
+      cp -r $src $out/zdotdir
+      makeWrapper ${zsh}/bin/zsh $out/bin/zsh \
+        --set ZDOTDIR $out/zdotdir \
         --set ZSH_PLUGINS ${zshPlugins} \
         --prefix PATH : ${
           lib.makeBinPath [
