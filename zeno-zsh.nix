@@ -1,7 +1,6 @@
 {
   antidote,
-  fzf,
-  lib,
+  fzf, lib,
   writeText,
   makeWrapper,
   starship,
@@ -40,17 +39,23 @@ let
     ''
     ${builtins.concatStringsSep "\n" pluginStr}
     '';
+  zshInit = writeText "zsh-init"
+   ''
+   echo "Sourcing zsh-plugins"
+   source ${zshPlugins}
+   '';
+  zdotdir = "$out/zdotdir";
 in
   stdenv.mkDerivation {
     name = "zeno-zsh";
     src = ./zdotdir;
     nativeBuildInputs = [ makeWrapper zsh ];
-    postBuild = ''
-      mkdir $out
-      cp -r $src $out/zdotdir
+    installPhase = ''
+      mkdir -p ${zdotdir}
+      cp -r ${./zdotdir}/. ${zdotdir}/
+      cp ${zshPlugins} ${zdotdir}/${zshPlugins.name}
       makeWrapper ${zsh}/bin/zsh $out/bin/zsh \
-        --set ZDOTDIR $out/zdotdir \
-        --set ZSH_PLUGINS ${zshPlugins} \
+        --set ZDOTDIR ${zdotdir} \
         --prefix PATH : ${
           lib.makeBinPath [
             starship
