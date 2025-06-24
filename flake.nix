@@ -16,15 +16,19 @@
       zenoZsh = pkgs.callPackage ./zeno-zsh.nix {};
     in 
   {
-    ## APPS
+    # APPS
     apps.${system}.default = {
       type = "app";
       program = "${self.packages.${system}.default}/bin/zsh";
     };
 
-    ## PACKAGE
+    # PACKAGE
     packages.${system}.default = zenoZsh;
 
+    # DEVSHELL
     devShells.${system}.default = import ./shell.nix { inherit pkgs; };
+
+   # HOME-MANAGER MODULE
+   homeManagerModules.zenoZsh = import ./zeno-zsh-module.nix;
   };
 }
