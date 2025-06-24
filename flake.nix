@@ -24,6 +24,7 @@
 
     ## PACKAGE
     packages.${system}.default = zenoZsh;
+
     devShells.${system}.default = import ./shell.nix { inherit pkgs; };
   };
 }

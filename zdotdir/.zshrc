@@ -1,7 +1,7 @@
 setopt nobeep
-echo "Hello from zshrc3"
 
-source $ZDOTDIR/zsh-plugins
+# source $ZDOTDIR/zsh-plugins
+source $ZSH_PLUGIN_CONFIG
 
 eval "$(starship init zsh)"
 source <(fzf --zsh)
