@@ -71,7 +71,7 @@ stdenv.mkDerivation {
     mkdir -p ${zdotdir}
     cp -r ${./zdotdir}/. ${zdotdir}/
     # cp ${zshPlugins} ${zdotdir}/${zshPlugins.name}
-    makeWrapper ${zsh}/bin/zsh $out/bin/zsh \
+    makeWrapper ${zsh}/bin/zsh $out/bin/zeno-zsh \
       --set ZDOTDIR ${zdotdir} \
       --set ZSH_PLUGIN_CONFIG ${zshPlugins} \
       --prefix PATH : ${
