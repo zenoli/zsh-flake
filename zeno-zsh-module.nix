@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.programs.zeno-zsh;
+  cfg = config.programs.zenoZsh;
   zenoZsh = pkgs.callPackage ./zeno-zsh.nix {};
 
 
