@@ -22,11 +22,12 @@ let
       name = "fzf-tab";
       plugin = zsh-fzf-tab;
     }
-    {
+    rec {
       name = "zsh-vi-mode";
       plugin = zsh-vi-mode;
       config = ''
-        zvm_after_init_commands+=('source <(fzf --zsh)')
+        source ${zdotdir}/plugins/${name}.zsh
+        # zvm_after_init_commands+=('source <(fzf --zsh)')
       '';
     }
   ];
@@ -51,12 +52,13 @@ let
       )
       pluginSpecs;
 
-  zshPlugins = writeText "zsh-plugins" ''
+  zshPlugins = ''
     ${builtins.concatStringsSep "\n" pluginConfigs}
   '';
-  zshInit = writeText "zsh-init" ''
+  zshRc = writeText ".zshrc" ''
     echo "Sourcing zsh-plugins"
     source ${zshPlugins}
+    source $ZDOTDIR/init.zsh
   '';
   zdotdir = "$out/zdotdir";
 in
@@ -70,10 +72,12 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir -p ${zdotdir}
     cp -r ${./zdotdir}/. ${zdotdir}/
-    # cp ${zshPlugins} ${zdotdir}/${zshPlugins.name}
+    cat > ${zdotdir}/.zshrc <<EOF
+    ${builtins.concatStringsSep "\n" pluginConfigs}
+    source ${zdotdir}/init.zsh
+    EOF
     makeWrapper ${zsh}/bin/zsh $out/bin/zeno-zsh \
       --set ZDOTDIR ${zdotdir} \
-      --set ZSH_PLUGIN_CONFIG ${zshPlugins} \
       --prefix PATH : ${
         lib.makeBinPath [
           starship

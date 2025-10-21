@@ -11,6 +11,7 @@
 
   outputs = { self, nixpkgs, home-manager }: 
     let
+
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       zenoZsh = pkgs.callPackage ./zeno-zsh.nix {};
@@ -19,7 +20,7 @@
     # APPS
     apps.${system}.default = {
       type = "app";
-      program = "${self.packages.${system}.default}/bin/zsh";
+      program = "${self.packages.${system}.default}/bin/zeno-zsh";
     };
 
     # PACKAGE
