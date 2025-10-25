@@ -1,1 +1,1 @@
-zvm_after_init_commands+=('source <(fzf --zsh)')
+# zvm_after_init_commands+=('source <(fzf --zsh)')

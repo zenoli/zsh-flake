@@ -33,3 +33,4 @@
    homeManagerModules.zenoZsh = import ./zeno-zsh-module.nix;
   };
 }
+

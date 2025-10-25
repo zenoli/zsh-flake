@@ -26,8 +26,8 @@ let
       name = "zsh-vi-mode";
       plugin = zsh-vi-mode;
       config = ''
-        source ${zdotdir}/plugins/${name}.zsh
-        # zvm_after_init_commands+=('source <(fzf --zsh)')
+        # source ${zdotdir}/plugins/${name}.zsh
+        zvm_after_init_commands+=('source <(fzf --zsh)')
       '';
     }
   ];
@@ -55,11 +55,11 @@ let
   zshPlugins = ''
     ${builtins.concatStringsSep "\n" pluginConfigs}
   '';
-  zshRc = writeText ".zshrc" ''
-    echo "Sourcing zsh-plugins"
-    source ${zshPlugins}
-    source $ZDOTDIR/init.zsh
-  '';
+  # zshRc = writeText ".zshrc" ''
+  #   source ${zshPlugins}
+  #   source $ZDOTDIR/init.zsh
+  #   echo "Sourcing zsh-plugins"
+  # '';
   zdotdir = "$out/zdotdir";
 in
 stdenv.mkDerivation {
@@ -73,7 +73,7 @@ stdenv.mkDerivation {
     mkdir -p ${zdotdir}
     cp -r ${./zdotdir}/. ${zdotdir}/
     cat > ${zdotdir}/.zshrc <<EOF
-    ${builtins.concatStringsSep "\n" pluginConfigs}
+    ${zshPlugins}
     source ${zdotdir}/init.zsh
     EOF
     makeWrapper ${zsh}/bin/zsh $out/bin/zeno-zsh \

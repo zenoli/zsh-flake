@@ -9,3 +9,5 @@ bindkey -M vicmd '^f' edit-command-line
 bindkey -M viins '^f' edit-command-line
 
 source $ZDOTDIR/options.zsh
+
+echo "hello world !"
