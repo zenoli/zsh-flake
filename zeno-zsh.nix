@@ -10,6 +10,7 @@
   # programs
   fzf,
   gh,
+  git,
   jq,
   starship,
   zsh,
@@ -22,23 +23,8 @@
 let
   ghd = writeShellApplication {
     name = "ghd";
-    runtimeInputs = [ fzf gh jq ];
-    text = ''
-      issue=$( \
-          gh issue list --json number,title \
-          | jq '.[] | { number, title } | join(" ")' \
-          | sed 's/"//g' \
-          | fzf
-      )
-      number=$(echo "$issue" | cut -d ' ' -f1)
-      title=$(echo "$issue" | cut -d ' ' -f2-)
-      branch_name="feature/$number $title"
-      base_branch_name=$(git rev-parse --abbrev-ref HEAD)
-      gh issue develop "$number" \
-          --name "$branch_name" \
-          --base "$base_branch_name" \
-          --checkout
-    '';
+    runtimeInputs = [ fzf gh jq git ];
+    text = builtins.readFile ./scripts/ghd.sh;
   };
   pluginSpecs = [
     {
@@ -110,3 +96,4 @@ stdenv.mkDerivation {
       }
   '';
 }
+
