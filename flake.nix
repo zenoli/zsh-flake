@@ -28,6 +28,16 @@
         program = "${self.packages.${system}.ghd}/bin/ghd";
       };
     };
+    apps."aarch64-darwin" = {
+      default = {
+        type = "app";
+        program = "${self.packages.${system}.default}/bin/zeno-zsh";
+      };
+      ghd = {
+        type = "app";
+        program = "${self.packages.${system}.ghd}/bin/ghd";
+      };
+    };
 
     # PACKAGE
     packages.${system} = {
