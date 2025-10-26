@@ -1,6 +1,7 @@
 {
   # build dependencies
   lib,
+  writeShellApplication,
   makeWrapper,
   stdenv,
   symlinkJoin,
@@ -8,6 +9,8 @@
 
   # programs
   fzf,
+  gh,
+  jq,
   starship,
   zsh,
 
@@ -17,6 +20,26 @@
   zsh-vi-mode,
 }:
 let
+  ghd = writeShellApplication {
+    name = "ghd";
+    runtimeInputs = [ fzf gh jq ];
+    text = ''
+      issue=$( \
+          gh issue list --json number,title \
+          | jq '.[] | { number, title } | join(" ")' \
+          | sed 's/"//g' \
+          | fzf
+      )
+      number=$(echo "$issue" | cut -d ' ' -f1)
+      title=$(echo "$issue" | cut -d ' ' -f2-)
+      branch_name="feature/$number $title"
+      base_branch_name=$(git rev-parse --abbrev-ref HEAD)
+      gh issue develop "$number" \
+          --name "$branch_name" \
+          --base "$base_branch_name" \
+          --checkout
+    '';
+  };
   pluginSpecs = [
     {
       name = "fzf-tab";
@@ -82,6 +105,7 @@ stdenv.mkDerivation {
         lib.makeBinPath [
           starship
           fzf
+          ghd
         ]
       }
   '';
