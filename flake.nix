@@ -11,26 +11,35 @@
 
   outputs = { self, nixpkgs, home-manager }: 
     let
-
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       zenoZsh = pkgs.callPackage ./zeno-zsh.nix {};
+      ghd = pkgs.callPackage ./scripts/ghd {};
     in 
   {
     # APPS
-    apps.${system}.default = {
-      type = "app";
-      program = "${self.packages.${system}.default}/bin/zeno-zsh";
+    apps.${system} = {
+      default = {
+        type = "app";
+        program = "${self.packages.${system}.default}/bin/zeno-zsh";
+      };
+      ghd = {
+        type = "app";
+        program = "${self.packages.${system}.ghd}/bin/ghd";
+      };
     };
 
     # PACKAGE
-    packages.${system}.default = zenoZsh;
+    packages.${system} = {
+      default = zenoZsh;
+      ghd = ghd;
+    };
 
     # DEVSHELL
     devShells.${system}.default = import ./shell.nix { inherit pkgs; };
 
-   # HOME-MANAGER MODULE
-   homeManagerModules.zenoZsh = import ./zeno-zsh-module.nix;
+    # HOME-MANAGER MODULE
+    homeManagerModules.zenoZsh = import ./zeno-zsh-module.nix;
   };
 }
 

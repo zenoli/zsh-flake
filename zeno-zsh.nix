@@ -1,6 +1,7 @@
 {
   # build dependencies
   lib,
+  callPackage,
   writeShellApplication,
   makeWrapper,
   stdenv,
@@ -21,11 +22,7 @@
   zsh-vi-mode,
 }:
 let
-  ghd = writeShellApplication {
-    name = "ghd";
-    runtimeInputs = [ fzf gh jq git ];
-    text = builtins.readFile ./scripts/ghd.sh;
-  };
+  ghd = callPackage ./scripts/ghd {};
   pluginSpecs = [
     {
       name = "fzf-tab";
