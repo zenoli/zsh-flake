@@ -17,30 +17,13 @@
       ghd = pkgs.callPackage ./scripts/ghd {};
     in 
   {
-    # APPS
-    apps.${system} = {
-      default = {
-        type = "app";
-        program = "${self.packages.${system}.default}/bin/zeno-zsh";
-      };
-      ghd = {
-        type = "app";
-        program = "${self.packages.${system}.ghd}/bin/ghd";
-      };
-    };
-    apps."aarch64-darwin" = {
-      default = {
-        type = "app";
-        program = "${self.packages.${system}.default}/bin/zeno-zsh";
-      };
-      ghd = {
-        type = "app";
-        program = "${self.packages.${system}.ghd}/bin/ghd";
-      };
-    };
 
     # PACKAGE
     packages.${system} = {
+      default = zenoZsh;
+      ghd = ghd;
+    };
+    packages."aarch64-darwin" = {
       default = zenoZsh;
       ghd = ghd;
     };
