@@ -16,6 +16,7 @@
   jq,
   starship,
   zsh,
+  direnv,
 
   # Zsh Plugins
   zsh-autopair,
@@ -94,6 +95,7 @@ stdenv.mkDerivation {
           starship
           fzf
           ghd
+          direnv
         ]
       }
   '';

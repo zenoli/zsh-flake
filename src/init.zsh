@@ -1,5 +1,6 @@
 eval "$(starship init zsh)"
 source <(fzf --zsh)
+eval "$(direnv hook zsh)"
 autoload -U compinit && compinit
 
 KEYTIMEOUT=1
