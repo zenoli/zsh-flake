@@ -8,6 +8,6 @@ VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 bindkey -M vicmd '^f' edit-command-line
 bindkey -M viins '^f' edit-command-line
 
-source $ZDOTDIR/options.zsh
+load options.zsh
 
-echo "hello!"
+echo "hello! blubb"

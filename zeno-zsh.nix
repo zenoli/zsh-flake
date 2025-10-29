@@ -61,26 +61,37 @@ let
   zshPlugins = ''
     ${builtins.concatStringsSep "\n" pluginConfigs}
   '';
-  # zshRc = writeText ".zshrc" ''
-  #   source ${zshPlugins}
-  #   source $ZDOTDIR/init.zsh
-  #   echo "Sourcing zsh-plugins"
-  # '';
+
   zdotdir = "$out/zdotdir";
 in
 stdenv.mkDerivation {
   name = "zeno-zsh";
-  src = ./zdotdir;
+  src = ./src;
   nativeBuildInputs = [
     makeWrapper
     zsh
   ];
+  zdotdir = "$out/zdotdir";
   installPhase = ''
     mkdir -p ${zdotdir}
-    cp -r ${./zdotdir}/. ${zdotdir}/
     cat > ${zdotdir}/.zshrc <<EOF
+
+    # Sources a file relative to the src directory
+    function load {
+      source $src/\$1
+    }
+
+    # Cleans up the environment
+    function cleanup {
+      unfunction load
+      unset ZDOTDIR
+    }
+
     ${zshPlugins}
-    source ${zdotdir}/init.zsh
+
+    load init.zsh
+
+    cleanup
     EOF
     makeWrapper ${zsh}/bin/zsh $out/bin/zeno-zsh \
       --set ZDOTDIR ${zdotdir} \
