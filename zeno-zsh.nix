@@ -2,6 +2,7 @@
   # build dependencies
   lib,
   callPackage,
+  writeTextFile,
   writeShellApplication,
   makeWrapper,
   stdenv,
@@ -32,37 +33,51 @@ let
       name = "zsh-vi-mode";
       plugin = zsh-vi-mode;
       config = ''
-        # source ${zdotdir}/plugins/${name}.zsh
         zvm_after_init_commands+=('source <(fzf --zsh)')
       '';
     }
   ];
-  pluginConfigs =
-    builtins.map
-      (
-        spec:
-        builtins.concatStringsSep "\n" (
-          [
-            ''
-              ##########################
-              ## ${spec.name}
-              ##########################
-              source ${spec.plugin.src}/${spec.name}.plugin.zsh
-            ''
-          ]
-          ++ (lib.optionals (builtins.hasAttr "config" spec) [
-            "# Config"
-            spec.config
-          ])
-        )
-      )
-      pluginSpecs;
+  zshPlugins = lib.concatMapStringsSep "\n" (
+    spec:
+    builtins.concatStringsSep "\n" (
+      [
+        ''
+          ##########################
+          ## ${spec.name}
+          ##########################
+          source ${spec.plugin.src}/${spec.name}.plugin.zsh
+        ''
+      ]
+      ++ (lib.optionals (builtins.hasAttr "config" spec) [
+        "# Config"
+        spec.config
+      ])
+    )
+  )
+  pluginSpecs;
 
-  zshPlugins = ''
-    ${builtins.concatStringsSep "\n" pluginConfigs}
-  '';
+  zdotdir = writeTextFile {
+    name = "zdotdir";
+    text = ''
+      # Sources a file relative to the src directory
+      function load {
+        source ${./src}/$1
+      }
 
-  zdotdir = "$out/zdotdir";
+      # Cleans up the environment
+      function cleanup {
+        unfunction load
+        # unset ZDOTDIR
+      }
+
+      ${zshPlugins}
+
+      load init.zsh
+
+      cleanup
+    '';
+    destination = "/.zshrc";
+  };
 in
 stdenv.mkDerivation {
   name = "zeno-zsh";
@@ -71,28 +86,7 @@ stdenv.mkDerivation {
     makeWrapper
     zsh
   ];
-  zdotdir = "$out/zdotdir";
   installPhase = ''
-    mkdir -p ${zdotdir}
-    cat > ${zdotdir}/.zshrc <<EOF
-
-    # Sources a file relative to the src directory
-    function load {
-      source $src/\$1
-    }
-
-    # Cleans up the environment
-    function cleanup {
-      unfunction load
-      unset ZDOTDIR
-    }
-
-    ${zshPlugins}
-
-    load init.zsh
-
-    cleanup
-    EOF
     makeWrapper ${zsh}/bin/zsh $out/bin/zeno-zsh \
       --set ZDOTDIR ${zdotdir} \
       --prefix PATH : ${
