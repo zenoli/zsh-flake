@@ -10,28 +10,19 @@
   };
 
   outputs = { self, nixpkgs, home-manager }: 
-    let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-      zenoZsh = pkgs.callPackage ./zeno-zsh.nix {};
-      ghd = pkgs.callPackage ./scripts/ghd {};
-    in 
+  let
+    util = import ./nix/util.nix { inherit nixpkgs; };
+  in 
   {
+    packages = util.forAllSystems (pkgs: {
+      default = pkgs.callPackage ./zeno-zsh.nix {};
+      ghd = pkgs.callPackage ./scripts/ghd {};
+    });
 
-    # PACKAGE
-    packages.${system} = {
-      default = zenoZsh;
-      ghd = ghd;
-    };
-    packages."aarch64-darwin" = {
-      default = zenoZsh;
-      ghd = ghd;
-    };
+    devShells = util.forAllSystems (pkgs: {
+      default = import ./nix/shell.nix { inherit pkgs; };
+    });
 
-    # DEVSHELL
-    devShells.${system}.default = import ./shell.nix { inherit pkgs; };
-
-    # HOME-MANAGER MODULE
     homeManagerModules.zenoZsh = import ./zeno-zsh-module.nix;
   };
 }
