@@ -7,16 +7,28 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    wrappers.url = "github:lassulus/wrappers";
   };
 
-  outputs = { self, nixpkgs, home-manager }: 
+  outputs = { self, nixpkgs, home-manager, wrappers }: 
   let
     util = import ./nix/util.nix { inherit nixpkgs; };
+    applyWrapperModule = { moduleFn, pkgs, args }:
+    ((moduleFn { 
+      wlib = wrappers.lib; 
+      lib = nixpkgs.lib; 
+    }).apply ({ inherit pkgs; } // args)).wrapper;
   in 
   {
     packages = util.forAllSystems (pkgs: {
       default = pkgs.callPackage ./zeno-zsh.nix {};
       ghd = pkgs.callPackage ./scripts/ghd {};
+      # ffmpeg = (ffmpeg.apply { inherit pkgs; }).wrapper;
+      ffmpeg = applyWrapperModule {
+        moduleFn = import ./zeno-zsh2.nix;
+        inherit pkgs;
+        args = {};
+      };
     });
 
     devShells = util.forAllSystems (pkgs: {
