@@ -80,15 +80,12 @@ let
     destination = "/.zshrc";
   };
 in
-stdenv.mkDerivation {
-  name = "zeno-zsh";
-  src = ./src;
-  nativeBuildInputs = [
-    makeWrapper
-    zsh
-  ];
-  installPhase = ''
-    makeWrapper ${zsh}/bin/zsh $out/bin/zeno-zsh \
+symlinkJoin {
+  name = "zsh";
+  buildInputs = [ makeWrapper ];
+  paths = [ zsh ];
+  postBuild = ''
+    wrapProgram $out/bin/zsh \
       --set ZDOTDIR ${zdotdir} \
       --prefix PATH : ${
         lib.makeBinPath [
