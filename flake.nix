@@ -13,7 +13,7 @@
   outputs = { self, nixpkgs, home-manager, wrappers }: 
   let
     util = import ./nix/util.nix { inherit nixpkgs; };
-    applyWrapperModule = { moduleFn, pkgs, args }:
+    applyWrapperModule = moduleFn: pkgs: args:
     ((moduleFn { 
       wlib = wrappers.lib; 
       lib = nixpkgs.lib; 
@@ -23,12 +23,7 @@
     packages = util.forAllSystems (pkgs: {
       default = pkgs.callPackage ./zeno-zsh.nix {};
       ghd = pkgs.callPackage ./scripts/ghd {};
-      # ffmpeg = (ffmpeg.apply { inherit pkgs; }).wrapper;
-      ffmpeg = applyWrapperModule {
-        moduleFn = import ./zeno-zsh2.nix;
-        inherit pkgs;
-        args = {};
-      };
+      zsh2 = applyWrapperModule (import ./zeno-zsh2.nix) pkgs {};
     });
 
     devShells = util.forAllSystems (pkgs: {
