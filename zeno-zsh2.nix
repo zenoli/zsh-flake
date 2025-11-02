@@ -47,6 +47,10 @@ wlib.wrapModule (
           # unset ZDOTDIR
         }
 
+        ${lib.optionalString config.direnv ''
+          echo "Foo feature is enabled!"
+        ''}
+
         load init.zsh
 
         cleanup
@@ -56,26 +60,17 @@ wlib.wrapModule (
   in
   {
     options = {
-      profile = lib.mkOption {
-        type = lib.types.enum [
-          "fast"
-          "quality"
-        ];
-        default = "fast";
-        description = "Encoding profile to use";
-      };
-      outputDir = lib.mkOption {
-        type = lib.types.str;
-        default = "./output";
-        description = "Directory for output files";
-      };
+      direnv = lib.mkEnableOption "direnv integration";
     };
     config = {
       package = config.pkgs.zsh;
-      extraPackages = with pkgs; [ starship ];
+      extraPackages = with pkgs; 
+        [ starship ] 
+        ++ lib.optional config.direnv direnv;
       env = {
         ZDOTDIR = "${zdotdir}";
       };
     };
   }
 )
+

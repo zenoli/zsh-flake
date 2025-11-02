@@ -23,7 +23,7 @@
     packages = util.forAllSystems (pkgs: {
       default = pkgs.callPackage ./zeno-zsh.nix {};
       ghd = pkgs.callPackage ./scripts/ghd {};
-      zsh2 = applyWrapperModule (import ./zeno-zsh2.nix) pkgs {};
+      zsh2 = applyWrapperModule (import ./zeno-zsh2.nix) pkgs { direnv = true ;};
     });
 
     devShells = util.forAllSystems (pkgs: {

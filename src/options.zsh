@@ -1,3 +1,3 @@
 setopt nobeep
 
-echo "Hello from"
+echo "Hello world2"
