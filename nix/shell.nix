@@ -18,6 +18,7 @@ let
         --stop-timeout=1s \
         --wrap-process=none \
         nix run .#zsh2
+        # nix run
       '';
      })
   ];
@@ -25,4 +26,3 @@ in
 pkgs.mkShell {
   packages = with pkgs; [ jq ] ++ scripts;
 }
-
