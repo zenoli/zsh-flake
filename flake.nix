@@ -8,9 +8,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wrappers.url = "github:lassulus/wrappers";
+    wrapper-manager.url = "github:viperML/wrapper-manager";
   };
 
-  outputs = { self, nixpkgs, home-manager, wrappers }: 
+  outputs = { self, nixpkgs, home-manager, wrappers, wrapper-manager }: 
   let
     util = import ./nix/util.nix { inherit nixpkgs; };
     loadModule = moduleFn:
@@ -24,10 +25,18 @@
       ((loadModule moduleFn).apply ({ inherit pkgs; } // args));
   in 
   {
-    packages = util.forAllSystems (pkgs: {
+    packages = util.forAllSystems (pkgs: 
+    let 
+      wm-eval = wrapper-manager.lib {
+        inherit pkgs;
+        modules = [ ./zeno-zsh3.nix ];
+      };
+    in
+    {
       default = pkgs.callPackage ./zeno-zsh.nix {};
       ghd = pkgs.callPackage ./scripts/ghd {};
       zsh2 = applyWrapperModule (import ./zeno-zsh2.nix) pkgs { direnv = false; };
+      zsh3 = wm-eval.config.wrappers.zsh.wrapped;
 
     });
 
