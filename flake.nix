@@ -37,6 +37,7 @@
       ghd = pkgs.callPackage ./scripts/ghd {};
       zsh2 = applyWrapperModule (import ./zeno-zsh2.nix) pkgs { direnv = false; };
       zsh3 = wm-eval.config.wrappers.zsh.wrapped;
+      zsh4 = wrapper-manager.lib.wrapWith pkgs (import ./zeno-zsh4.nix);
 
     });
 
