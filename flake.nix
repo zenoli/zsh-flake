@@ -13,24 +13,30 @@
   outputs = { self, nixpkgs, home-manager, wrappers }: 
   let
     util = import ./nix/util.nix { inherit nixpkgs; };
-    applyWrapperModule = moduleFn: pkgs: args:
-    ((moduleFn { 
+    loadModule = moduleFn:
+    (moduleFn { 
       wlib = wrappers.lib; 
       lib = nixpkgs.lib; 
-    }).apply ({ inherit pkgs; } // args)).wrapper;
+    });
+    applyWrapperModule = moduleFn: pkgs: args:
+      ((loadModule moduleFn).apply ({ inherit pkgs; } // args)).wrapper;
+    evalWrapperConfig = moduleFn: pkgs: args:
+      ((loadModule moduleFn).apply ({ inherit pkgs; } // args));
   in 
   {
     packages = util.forAllSystems (pkgs: {
       default = pkgs.callPackage ./zeno-zsh.nix {};
       ghd = pkgs.callPackage ./scripts/ghd {};
-      zsh2 = applyWrapperModule (import ./zeno-zsh2.nix) pkgs { direnv = true ;};
+      zsh2 = applyWrapperModule (import ./zeno-zsh2.nix) pkgs { direnv = false; };
+
     });
 
     devShells = util.forAllSystems (pkgs: {
       default = import ./nix/shell.nix { inherit pkgs; };
     });
 
-    homeManagerModules.zenoZsh = import ./zeno-zsh-module.nix;
+    zshConfig = evalWrapperConfig (import ./zeno-zsh2.nix) nixpkgs.legacyPackages."x86_64-linux" ./zsh-config.nix;
+
+    homeManagerModules.zenoZsh = (import ./zeno-zsh-module.nix);
   };
 }
-

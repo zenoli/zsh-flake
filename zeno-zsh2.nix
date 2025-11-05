@@ -66,11 +66,11 @@ wlib.wrapModule (
       package = config.pkgs.zsh;
       extraPackages = with pkgs; 
         [ starship ] 
-        ++ lib.optional config.direnv direnv;
+        ++ lib.optional config.direnv cowsay;
       env = {
         ZDOTDIR = "${zdotdir}";
       };
+      direnv = lib.mkDefault true;
     };
   }
 )
-

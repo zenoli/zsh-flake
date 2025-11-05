@@ -75,6 +75,8 @@ let
 
       load init.zsh
 
+      echo "zsh1"
+
       cleanup
     '';
     destination = "/.zshrc";
