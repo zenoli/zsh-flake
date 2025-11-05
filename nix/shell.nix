@@ -21,6 +21,16 @@ let
         # nix run
       '';
      })
+    (pkgs.writeShellApplication {
+      name = "debug";
+      runtimeInputs = with pkgs; [ watchexec ];
+      text = ''
+      watchexec \
+        --clear \
+        --watch flake.nix \
+        nix build .#zsh2
+      '';
+     })
   ];
 in 
 pkgs.mkShell {
