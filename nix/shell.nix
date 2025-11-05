@@ -17,8 +17,7 @@ let
         --stop-signal=SIGHUP \
         --stop-timeout=1s \
         --wrap-process=none \
-        nix run .#zsh3
-        # nix run
+        nix run .#zsh4
       '';
      })
     (pkgs.writeShellApplication {
