@@ -1,1 +1,1 @@
-{ direnv = true; }
+{}

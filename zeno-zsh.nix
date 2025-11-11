@@ -47,8 +47,8 @@ wlib.wrapModule (
           # unset ZDOTDIR
         }
 
-        ${lib.optionalString config.direnv ''
-          echo "Foo feature is enabled!"
+        ${lib.optionalString config.direnv.enable ''
+          eval "$(direnv hook zsh)"
         ''}
 
         load init.zsh
@@ -60,17 +60,32 @@ wlib.wrapModule (
   in
   {
     options = {
-      direnv = lib.mkEnableOption "direnv integration";
+      direnv = {
+        enable = lib.mkEnableOption "direnv integration";
+        package = lib.mkOption {
+          type = lib.types.package;
+          default = pkgs.direnv;
+        };
+        nix-direnv = {
+          enable = lib.mkEnableOption "direnv integration";
+        };
+      };
+      fzf = lib.mkEnableOption "fzf integration";
     };
     config = {
       package = config.pkgs.zsh;
       extraPackages = with pkgs; 
         [ starship ] 
-        ++ lib.optional config.direnv cowsay;
+        ++ lib.optional config.direnv.enable config.direnv.package
+        ++ lib.optional config.fzf fzf;
       env = {
         ZDOTDIR = "${zdotdir}";
       };
-      direnv = lib.mkDefault true;
+      direnv = {
+        enable = lib.mkDefault true;
+        nix-direnv.enable = lib.mkDefault true;
+      };
+      fzf = lib.mkDefault true;
     };
   }
 )
