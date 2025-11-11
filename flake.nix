@@ -27,11 +27,17 @@
     {
       wrapperModules = {
         zsh = import ./zeno-zsh.nix;
+        direnv = import ./direnv.nix;
       };
 
       packages = util.forAllSystems (pkgs: {
-        default = applyWrapperModule self.wrapperModules.zsh pkgs (import ./zsh-config.nix);
-        ghd = pkgs.callPackage ./scripts/ghd { };
+        default = applyWrapperModule 
+          self.wrapperModules.zsh 
+          pkgs 
+          { direnv.package = self.packages.x86_64-linux.direnv; };
+        ghd = pkgs.callPackage ./scripts/ghd {};
+        direnv = applyWrapperModule 
+          self.wrapperModules.direnv pkgs {};
       });
 
       devShells = util.forAllSystems (pkgs: {
