@@ -3,45 +3,50 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
     wrappers.url = "github:lassulus/wrappers";
   };
-
-  outputs =
-    {
-      self,
-      nixpkgs,
-      wrappers,
-    }:
+  outputs = inputs@{ flake-parts, wrappers, ... }:
+  let
+    zshModule = import ./zeno-zsh.nix;
+    direnvModule = import ./direnv.nix;
+  in 
+  flake-parts.lib.mkFlake { inherit inputs; } {
+    systems = [
+      "aarch64-darwin"
+      "aarch64-linux"
+      "i686-linux"
+      "x86_64-darwin"
+      "x86_64-linux"
+    ];
+    flake = {
+      wrapperModules = {
+        zsh = zshModule;
+        direnv = direnvModule;
+      };
+    };
+    perSystem = { pkgs, self', ... }: 
     let
-      util = import ./nix/util.nix { inherit nixpkgs; };
       loadModule =
         moduleFn:
         (moduleFn {
           wlib = wrappers.lib;
-          lib = nixpkgs.lib;
+          lib = pkgs.lib;
         });
       applyWrapperModule =
-        moduleFn: pkgs: args:
+        moduleFn: args:
         ((loadModule moduleFn).apply ({ inherit pkgs; } // args)).wrapper;
-    in
+    in 
     {
-      wrapperModules = {
-        zsh = import ./zeno-zsh.nix;
-        direnv = import ./direnv.nix;
+      packages = {
+        default = applyWrapperModule zshModule { direnv.package = self'.packages.direnv; };
+        direnv = applyWrapperModule direnvModule {};
+        ghd = pkgs.callPackage ./scripts/ghd {};
       };
 
-      packages = util.forAllSystems (pkgs: {
-        default = applyWrapperModule 
-          self.wrapperModules.zsh 
-          pkgs 
-          { direnv.package = self.packages.x86_64-linux.direnv; };
-        ghd = pkgs.callPackage ./scripts/ghd {};
-        direnv = applyWrapperModule 
-          self.wrapperModules.direnv pkgs {};
-      });
-
-      devShells = util.forAllSystems (pkgs: {
+      devShells = {
         default = import ./nix/shell.nix { inherit pkgs; };
-      });
+      };
     };
+  };
 }
