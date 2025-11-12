@@ -75,7 +75,7 @@ wlib.wrapModule (
     config = {
       package = config.pkgs.zsh;
       extraPackages = with pkgs; 
-        [ starship ] 
+        [ starship cowsay ] 
         ++ lib.optional config.direnv.enable config.direnv.package
         ++ lib.optional config.fzf fzf;
       env = {
