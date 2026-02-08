@@ -57,32 +57,25 @@ let
   };
 in
 {
+  _class = "wrapper";
   options = {
     direnv = {
       enable = lib.mkEnableOption "direnv integration";
-      package = lib.mkOption {
-        type = lib.types.package;
-        default = pkgs.direnv;
-      };
-      nix-direnv = {
-        enable = lib.mkEnableOption "direnv integration";
-      };
+      package = lib.mkPackageOption pkgs "direnv" { };
     };
-    fzf = lib.mkEnableOption "fzf integration";
+    fzf = {
+      enable = lib.mkEnableOption "fzf integration";
+      package = lib.mkPackageOption pkgs "fzf" { };
+    };
   };
   config = {
-    package = config.pkgs.zsh;
+    package = pkgs.zsh;
     extraPackages = with pkgs; 
       [ starship cowsay ] 
       ++ lib.optional config.direnv.enable config.direnv.package
-      ++ lib.optional config.fzf fzf;
+      ++ lib.optional config.fzf.enable fzf;
     env = {
       ZDOTDIR = "${zdotdir}";
     };
-    direnv = {
-      enable = lib.mkDefault true;
-      nix-direnv.enable = lib.mkDefault true;
-    };
-    fzf = lib.mkDefault true;
   };
 }
