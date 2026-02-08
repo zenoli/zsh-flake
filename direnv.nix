@@ -10,6 +10,23 @@ in
       type = wlib.types.file pkgs;
       default = {
         content = "";
+        path = pkgs.symlinkJoin {
+          name = "direnv-config";
+          paths = [
+            (pkgs.writeTextFile {
+              name = "direnvrc";
+              destination = "/direnvrc";
+              text = cfg.direnvrc.content;
+            })
+            (lib.optional cfg.nix-direnv.enable (pkgs.writeTextFile {
+              name = "direnvrc";
+              destination = "/lib/nix-direnv.sh";
+              text = ''
+                source ${cfg.nix-direnv.package}/share/nix-direnv/direnvrc
+              '';
+            }))
+          ];
+        };
       };
     };
     nix-direnv = {
@@ -20,21 +37,5 @@ in
   config = {
     package = pkgs.direnv;
     env = { DIRENV_CONFIG = "${cfg.direnvrc.path}"; };
-    direnvrc = {
-      content = ''
-        ${lib.optionalString cfg.nix-direnv.enable ''
-          source ${cfg.nix-direnv.package}/share/nix-direnv/direnvrc
-        ''
-        }
-      '';
-      # Creates a derivation "direnv-config" holding "direnvrc" as its single file:
-      # direnv-config/
-      #   direnvrc
-      path = pkgs.writeTextFile {
-        name = "direnv-config";
-        destination = "/direnvrc";
-        text = cfg.direnvrc.content;
-      };
-    };
   };
 }
