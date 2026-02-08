@@ -8,8 +8,9 @@
   };
   outputs = inputs@{ nixpkgs, flake-parts, wrappers, ... }:
   let
+    wlib = wrappers.lib;
     zshModule = import ./zeno-zsh.nix;
-    zshWrapperEvaled = wrappers.lib.wrapModule zshModule;
+    zshWrapperEvaled = wlib.wrapModule zshModule;
     direnvModule = import ./direnv.nix;
     direnvWrapperEvaled = wrappers.lib.wrapModule direnvModule;
   in 
@@ -21,35 +22,28 @@
       "x86_64-darwin"
       "x86_64-linux"
     ];
-    # flake = {
-    #   inherit zshModule zshWrapperEvaled;
-    #   zshWrapperExtended = zshWrapperEvaled.extend { pkgs = nixpkgs.legacyPackages.x86_64-linux; };
-    #   wrapperModules = {
-    #     zsh = zshModule;
-    #     direnv = direnvModule;
-    #   };
-    # };
     perSystem = { pkgs, self', ... }: 
     let
-      zshWrapperConfig = zshWrapperEvaled.apply { inherit pkgs; };
-      direnvWrapperConfig = direnvWrapperEvaled.apply { inherit pkgs; nix-direnv.enable = true; };
-      loadModule =
-        moduleFn:
-        (moduleFn {
-          wlib = wrappers.lib;
-          lib = pkgs.lib;
-        });
-      applyWrapperModule =
-        moduleFn: args:
-        ((loadModule moduleFn).apply ({ inherit pkgs; } // args)).wrapper;
+      zshWrapperConfig = zshWrapperEvaled.apply { 
+        inherit pkgs; 
+        direnv = {
+          enable = true;
+          package = self'.packages.direnv;
+        };
+        fzf = {
+          enable = true;
+        };
+      };
+      direnvWrapperConfig = direnvWrapperEvaled.apply { 
+        inherit pkgs; 
+        nix-direnv.enable = true; 
+      };
     in 
     {
       packages = {
         default = zshWrapperConfig.wrapper;
         direnv = direnvWrapperConfig.wrapper;
         ghd = pkgs.callPackage ./scripts/ghd {};
-        foo = pkgs.writeTextDir "foo" "hello foo";
-        bar = pkgs.writeText "bar" "hello bar";
       };
 
       devShells = {
