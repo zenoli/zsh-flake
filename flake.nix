@@ -6,10 +6,12 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     wrappers.url = "github:lassulus/wrappers";
   };
-  outputs = inputs@{ flake-parts, wrappers, ... }:
+  outputs = inputs@{ nixpkgs, flake-parts, wrappers, ... }:
   let
     zshModule = import ./zeno-zsh.nix;
+    zshWrapperEvaled = wrappers.lib.wrapModule zshModule;
     direnvModule = import ./direnv.nix;
+    direnvWrapperEvaled = wrappers.lib.wrapModule direnvModule;
   in 
   flake-parts.lib.mkFlake { inherit inputs; } {
     systems = [
@@ -19,14 +21,18 @@
       "x86_64-darwin"
       "x86_64-linux"
     ];
-    flake = {
-      wrapperModules = {
-        zsh = zshModule;
-        direnv = direnvModule;
-      };
-    };
+    # flake = {
+    #   inherit zshModule zshWrapperEvaled;
+    #   zshWrapperExtended = zshWrapperEvaled.extend { pkgs = nixpkgs.legacyPackages.x86_64-linux; };
+    #   wrapperModules = {
+    #     zsh = zshModule;
+    #     direnv = direnvModule;
+    #   };
+    # };
     perSystem = { pkgs, self', ... }: 
     let
+      zshWrapperConfig = zshWrapperEvaled.apply { inherit pkgs; };
+      direnvWrapperConfig = direnvWrapperEvaled.apply { inherit pkgs; nix-direnv.enable = true; };
       loadModule =
         moduleFn:
         (moduleFn {
@@ -39,9 +45,11 @@
     in 
     {
       packages = {
-        default = applyWrapperModule zshModule { direnv.package = self'.packages.direnv; };
-        direnv = applyWrapperModule direnvModule {};
+        default = zshWrapperConfig.wrapper;
+        direnv = direnvWrapperConfig.wrapper;
         ghd = pkgs.callPackage ./scripts/ghd {};
+        foo = pkgs.writeTextDir "foo" "hello foo";
+        bar = pkgs.writeText "bar" "hello bar";
       };
 
       devShells = {
