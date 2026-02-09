@@ -1,6 +1,37 @@
 { config, wlib, lib, ... }:
 let
   pkgs = config.pkgs;
+  zshPluginType = lib.types.submodule ({config, ... } :{
+    options = {
+      plugin = lib.mkOption {
+        type = lib.types.nullOr lib.types.package;
+        default = null;
+      };
+      src = lib.mkOption {
+        type = lib.types.path;
+        description = ''
+          Path to the plugin folder.
+
+          Will be added to {env}`fpath` and {env}`PATH`.
+        '';
+        default = config.plugin.src;
+      };
+      name = lib.mkOption {
+        type = lib.types.str;
+        default = if config.plugin != null 
+        then config.plugin.pname
+        else throw "Plugin option 'name' must be provided if 'plugin' is null.";
+      };
+      file = lib.mkOption {
+        type = lib.types.str;
+        default = "${config.name}.plugin.zsh";
+      };
+      init = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+      };
+    };
+  });
   pluginSpecs = [
     {
       name = "fzf-tab";
@@ -47,6 +78,9 @@ let
 
       ${zshPlugins}
 
+      echo ${(lib.head config.plugins).name}
+      echo ${(lib.head config.plugins).file}
+
       ${lib.optionalString config.direnv.enable ''
         eval "$(direnv hook zsh)"
       ''}
@@ -61,6 +95,11 @@ in
 {
   _class = "wrapper";
   options = {
+    plugins = lib.mkOption {
+      default = [ ];
+      type = lib.types.listOf zshPluginType;
+      description = "List of zsh plugins.";
+    };
     direnv = {
       enable = lib.mkEnableOption "direnv integration";
       package = lib.mkPackageOption pkgs "direnv" { };
@@ -71,11 +110,13 @@ in
     };
   };
   config = {
+    # plugins = [ { plugin = pkgs.zsh-vi-mode;} ];
+    plugins = [ { name = "my-name"; file = "my-file.sh"; src = pkgs.zsh-vi-mode.src;} ];
     package = pkgs.zsh;
     extraPackages = with pkgs; 
       [ starship cowsay ] 
       ++ lib.optional config.direnv.enable config.direnv.package
-      ++ lib.optional config.fzf.enable fzf;
+      ++ lib.optional config.fzf.enable config.fzf.package;
     env = {
       ZDOTDIR = "${zdotdir}";
     };
