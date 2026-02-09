@@ -45,6 +45,8 @@ let
         # unset ZDOTDIR
       }
 
+      ${zshPlugins}
+
       ${lib.optionalString config.direnv.enable ''
         eval "$(direnv hook zsh)"
       ''}
