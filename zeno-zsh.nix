@@ -30,26 +30,28 @@ let
         type = lib.types.nullOr lib.types.str;
         default = null;
       };
+      disable = lib.mkOption {
+        default = false;
+        example = true;
+        description = "Whether to disable plugin ${config.name}.";
+        type = lib.types.bool;
+      };
     };
   });
-  zshPlugins = lib.concatMapStringsSep "\n" (
+  enabledPlugins = lib.filter (plugin: !plugin.disable) config.plugins;
+  zshPluginConfigs = lib.concatMapStringsSep "\n" (
     plugin:
     builtins.concatStringsSep "\n" (
       [
         ''
-          ##########################
           ## ${plugin.name}
-          ##########################
           source ${plugin.src}/${plugin.file}
         ''
       ]
-      ++ (lib.optional (plugin.init != null) ''
-        # Config
-        ${plugin.init}
-        ''
+      ++ (lib.optional (plugin.init != null) plugin.init
       )
     )
-  ) config.plugins;
+  ) enabledPlugins;
   zdotdir = config.pkgs.writeTextFile {
     name = "zdotdir";
     text = ''
@@ -64,18 +66,22 @@ let
         # unset ZDOTDIR
       }
 
-      ${zshPlugins}
+      # Plugins
+
+      ${zshPluginConfigs}
+
+      # Integrations
 
       ${lib.optionalString config.starship.enable ''
-        # Starship integration
+        ## Starship integration
         eval "$(starship init zsh)"
       ''}
       ${lib.optionalString config.direnv.enable ''
-        # Direnv integration
+        ## Direnv integration
         eval "$(direnv hook zsh)"
       ''}
       ${lib.optionalString config.fzf.enable ''
-        # Fzf integration
+        ## Fzf integration
         source <(fzf --zsh)
       ''}
 
