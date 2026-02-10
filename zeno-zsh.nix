@@ -3,7 +3,7 @@ let
   pkgs = config.pkgs;
   zshPluginType = lib.types.submodule ({config, ... } :{
     options = {
-      plugin = lib.mkOption {
+      package = lib.mkOption {
         type = lib.types.nullOr lib.types.package;
         default = null;
       };
@@ -14,13 +14,13 @@ let
 
           Will be added to {env}`fpath` and {env}`PATH`.
         '';
-        default = config.plugin.src;
+        default = config.package.src;
       };
       name = lib.mkOption {
         type = lib.types.str;
-        default = if config.plugin != null 
-        then config.plugin.pname
-        else throw "Plugin option 'name' must be provided if 'plugin' is null.";
+        default = if config.package != null 
+        then config.package.pname
+        else throw "Plugin option 'name' must be provided if 'package' is null.";
       };
       file = lib.mkOption {
         type = lib.types.str;
@@ -32,36 +32,24 @@ let
       };
     };
   });
-  pluginSpecs = [
-    {
-      name = "fzf-tab";
-      plugin = pkgs.zsh-fzf-tab;
-    }
-    rec {
-      name = "zsh-vi-mode";
-      plugin = pkgs.zsh-vi-mode;
-      config = ''
-        zvm_after_init_commands+=('source <(fzf --zsh)')
-      '';
-    }
-  ];
   zshPlugins = lib.concatMapStringsSep "\n" (
-    spec:
+    plugin:
     builtins.concatStringsSep "\n" (
       [
         ''
           ##########################
-          ## ${spec.name}
+          ## ${plugin.name}
           ##########################
-          source ${spec.plugin.src}/${spec.name}.plugin.zsh
+          source ${plugin.src}/${plugin.file}
         ''
       ]
-      ++ (lib.optionals (builtins.hasAttr "config" spec) [
-        "# Config"
-        spec.config
-      ])
+      ++ (lib.optional (plugin.init != null) ''
+        # Config
+        ${plugin.init}
+        ''
+      )
     )
-  ) pluginSpecs;
+  ) config.plugins;
   zdotdir = config.pkgs.writeTextFile {
     name = "zdotdir";
     text = ''
@@ -77,9 +65,6 @@ let
       }
 
       ${zshPlugins}
-
-      echo ${(lib.head config.plugins).name}
-      echo ${(lib.head config.plugins).file}
 
       ${lib.optionalString config.starship.enable ''
         # Starship integration
@@ -123,8 +108,20 @@ in
     };
   };
   config = {
-    # plugins = [ { plugin = pkgs.zsh-vi-mode;} ];
-    plugins = [ { name = "my-name"; file = "my-file.sh"; src = pkgs.zsh-vi-mode.src;} ];
+    plugins = [ 
+      { 
+        package = pkgs.zsh-fzf-tab; 
+        name = "fzf-tab";
+      }
+      { 
+        package = pkgs.zsh-vi-mode;
+        init = (
+          if config.fzf.enable
+          then "zvm_after_init_commands+=('source <(fzf --zsh)')" 
+          else null
+        );
+      } 
+    ];
     package = pkgs.zsh;
     extraPackages = with pkgs; 
       [ cowsay ] 
