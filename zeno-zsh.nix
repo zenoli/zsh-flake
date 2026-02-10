@@ -114,20 +114,6 @@ in
     };
   };
   config = {
-    plugins = [ 
-      { 
-        package = pkgs.zsh-fzf-tab; 
-        name = "fzf-tab";
-      }
-      { 
-        package = pkgs.zsh-vi-mode;
-        init = (
-          if config.fzf.enable
-          then "zvm_after_init_commands+=('source <(fzf --zsh)')" 
-          else null
-        );
-      } 
-    ];
     package = pkgs.zsh;
     extraPackages = with pkgs; 
       [ cowsay ] 

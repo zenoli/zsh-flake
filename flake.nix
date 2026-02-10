@@ -36,6 +36,25 @@
         fzf = {
           enable = true;
         };
+        plugins = [ 
+          { 
+            package = pkgs.zsh-fzf-tab; 
+            name = "fzf-tab";
+          }
+          { 
+            package = pkgs.zsh-vi-mode;
+            init = (
+              if zshWrapperEvaled.fzf.enable
+              then "zvm_after_init_commands+=('source <(fzf --zsh)')" 
+              else null
+            );
+          } 
+          { 
+            package = pkgs.oh-my-zsh;
+            file = "plugins/git/git.plugin.zsh";
+            disable = true;
+          } 
+        ];
       };
       direnvWrapperConfig = direnvWrapperEvaled.apply { 
         inherit pkgs; 
