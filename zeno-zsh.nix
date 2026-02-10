@@ -81,8 +81,17 @@ let
       echo ${(lib.head config.plugins).name}
       echo ${(lib.head config.plugins).file}
 
+      ${lib.optionalString config.starship.enable ''
+        # Starship integration
+        eval "$(starship init zsh)"
+      ''}
       ${lib.optionalString config.direnv.enable ''
+        # Direnv integration
         eval "$(direnv hook zsh)"
+      ''}
+      ${lib.optionalString config.fzf.enable ''
+        # Fzf integration
+        source <(fzf --zsh)
       ''}
 
       load init.zsh
@@ -108,13 +117,18 @@ in
       enable = lib.mkEnableOption "fzf integration";
       package = lib.mkPackageOption pkgs "fzf" { };
     };
+    starship = {
+      enable = lib.mkEnableOption "starship integration";
+      package = lib.mkPackageOption pkgs "starship" { };
+    };
   };
   config = {
     # plugins = [ { plugin = pkgs.zsh-vi-mode;} ];
     plugins = [ { name = "my-name"; file = "my-file.sh"; src = pkgs.zsh-vi-mode.src;} ];
     package = pkgs.zsh;
     extraPackages = with pkgs; 
-      [ starship cowsay ] 
+      [ cowsay ] 
+      ++ lib.optional config.starship.enable config.starship.package
       ++ lib.optional config.direnv.enable config.direnv.package
       ++ lib.optional config.fzf.enable config.fzf.package;
     env = {
