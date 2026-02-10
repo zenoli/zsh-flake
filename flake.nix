@@ -26,6 +26,9 @@
     let
       zshWrapperConfig = zshWrapperEvaled.apply { 
         inherit pkgs; 
+        starship = {
+          enable = true;
+        };
         direnv = {
           enable = true;
           package = self'.packages.direnv;
