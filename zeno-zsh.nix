@@ -1,6 +1,5 @@
-{ config, wlib, lib, ... }:
+{ config, wlib, lib, pkgs, ... }:
 let
-  pkgs = config.pkgs;
   zshPluginType = lib.types.submodule ({config, ... } :{
     options = {
       package = lib.mkOption {
@@ -105,7 +104,7 @@ let
   };
 in
 {
-  _class = "wrapper";
+  imports = [ wlib.modules.default ];
   options = {
     plugins = lib.mkOption {
       default = [ ];
