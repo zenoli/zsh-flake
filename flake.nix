@@ -43,11 +43,7 @@
           }
           { 
             package = pkgs.zsh-vi-mode;
-            init = (
-              if zshWrapperEvaled.fzf.enable
-              then "zvm_after_init_commands+=('source <(fzf --zsh)')" 
-              else null
-            );
+            init = "zvm_after_init_commands+=('source <(fzf --zsh)')";
           } 
           { 
             package = pkgs.oh-my-zsh;
