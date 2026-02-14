@@ -1,6 +1,5 @@
-{ config, lib, wlib, ... }:
+{ config, lib, wlib, pkgs, ... }:
 let
-  pkgs = config.pkgs;
   cfg = config;
   direnvConfig = pkgs.symlinkJoin {
     name = "direnv-config";
@@ -21,7 +20,7 @@ let
   };
 in
 {
-  _class = "wrapper";
+  imports = [ wlib.modules.default ];
   options = {
     direnvrc = lib.mkOption {
       type = lib.types.lines;
