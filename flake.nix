@@ -36,7 +36,7 @@
           zsh = inputs.wrappers.lib.mkInstallModule {
             loc = [ "home" "packages" ];
             name = "zsh";
-            value = import ./zeno-zsh.nix;
+            value = config.wrappers.zsh;
           };
         };
         wrappers = {
