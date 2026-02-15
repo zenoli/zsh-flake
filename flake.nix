@@ -39,6 +39,12 @@
             value = config.flake.wrapperModules.zsh;
           };
         };
+        nixosModules = {
+          zsh = inputs.wrappers.lib.mkInstallModule {
+            name = "zsh";
+            value = config.flake.wrapperModules.zsh;
+          };
+        };
         wrappers = {
           direnv = { pkgs, wlib, ... }: {
             imports = [ (import ./direnv.nix) ];
