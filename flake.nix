@@ -32,6 +32,13 @@
           devShells.default = import ./nix/shell.nix { inherit pkgs; };
         };
       flake = {
+        homeManagerModules = {
+          zsh = inputs.wrappers.lib.mkInstallModule {
+            loc = [ "home" "packages" ];
+            name = "zsh";
+            value = import ./zeno-zsh.nix;
+          };
+        };
         wrappers = {
           direnv = { pkgs, wlib, ... }: {
             imports = [ (import ./direnv.nix) ];
