@@ -36,7 +36,7 @@
           zsh = inputs.wrappers.lib.mkInstallModule {
             loc = [ "home" "packages" ];
             name = "zsh";
-            value = config.flake.wrappers.zsh;
+            value = config.flake.wrapperModules.zsh;
           };
         };
         wrappers = {
