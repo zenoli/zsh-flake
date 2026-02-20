@@ -51,8 +51,14 @@ let
       )
     )
   ) enabledPlugins;
-  zdotdir = config.pkgs.writeTextFile {
+  zdotdir = pkgs.symlinkJoin {
     name = "zdotdir";
+    paths = [ zshrc zshenv ];
+
+  };
+  zshrc = config.pkgs.writeTextFile {
+    name = "zshrc";
+    destination = "/.zshrc";
     text = ''
       # Sources a file relative to the src directory
       function load {
@@ -100,7 +106,13 @@ let
 
       cleanup
     '';
-    destination = "/.zshrc";
+  };
+  zshenv = config.pkgs.writeTextFile {
+    name = "zshenv";
+    destination = "/.zshenv";
+    text = ''
+      export PATH=$PATH:${pkgs.lib.makeBinPath config.runtimePackages}
+    '';
   };
 in
 {
@@ -111,6 +123,13 @@ in
       type = lib.types.listOf zshPluginType;
       description = "List of zsh plugins.";
     };
+    runtimePackages = lib.mkOption {
+        type = lib.types.listOf lib.types.package;
+        default = [];
+        description = ''
+          Additional packages added to $PATH in the wrapped .zshenv.
+        '';
+      };
     direnv = {
       enable = lib.mkEnableOption "direnv integration";
       package = lib.mkPackageOption pkgs "direnv" { };
@@ -126,8 +145,8 @@ in
   };
   config = {
     package = pkgs.zsh;
-    extraPackages = with pkgs; 
-      [ cowsay ] 
+    runtimePackages = with pkgs; 
+      [ cowsay ]
       ++ lib.optional config.starship.enable config.starship.package
       ++ lib.optional config.direnv.enable config.direnv.package
       ++ lib.optional config.fzf.enable config.fzf.package;
