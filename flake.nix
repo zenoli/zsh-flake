@@ -50,20 +50,20 @@
             imports = [ (import ./direnv.nix) ];
             nix-direnv.enable = true;
           };
-          zsh = { pkgs, wlib, ... }: {
+          zsh = { pkgs, wlib, lib, ... }: {
             imports = [ (import ./zeno-zsh.nix) ];
             starship = {
-              enable = true;
+              enable = lib.mkDefault true;
             };
             direnv = {
-              enable = true;
+              enable = lib.mkDefault true;
               package = withSystem pkgs.stdenv.hostPlatform.system (
                   { config, ... }: # perSystem module arguments
                   config.packages.direnv
                 );
             };
             fzf = {
-              enable = true;
+              enable = lib.mkDefault true;
             };
             plugins = [ 
               { 
