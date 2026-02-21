@@ -118,6 +118,11 @@ in
 {
   imports = [ wlib.modules.default ];
   options = {
+    zdotdir = lib.mkOption {
+      type = lib.types.path;
+      default = zdotdir;
+      readOnly = true;
+    };
     plugins = lib.mkOption {
       default = [ ];
       type = lib.types.listOf zshPluginType;
