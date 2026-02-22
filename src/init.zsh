@@ -10,7 +10,6 @@ bindkey -M viins '^f' edit-command-line
 
 
 zsh_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
-echo "zsh_state_dir is $zsh_state_dir"
 mkdir -p "$zsh_state_dir"
 
 export HISTFILE="$zsh_state_dir/zsh_history"
