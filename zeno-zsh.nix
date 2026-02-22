@@ -73,7 +73,7 @@ let
 
       # Completion
 
-      local zsh_cache_dir="$XDG_CACHE_HOME/zsh"
+      local zsh_cache_dir="''${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
       if [[ ! -d $zsh_cache_dir ]]; then
           echo "Creating $zsh_cache_dir"
           mkdir -p $zsh_cache_dir
