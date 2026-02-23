@@ -111,6 +111,14 @@ let
     name = "zshenv";
     destination = "/.zshenv";
     text = ''
+      ${
+        let 
+          sw = config.hmSessionVariables;
+        in 
+          lib.optionalString sw.enable ''
+            # Home Manager session variables
+            [[ -f ${sw.scriptLocation} ]] && source ${sw.scriptLocation}
+          ''}
       export PATH=$PATH:${pkgs.lib.makeBinPath config.runtimePackages}
     '';
   };
@@ -135,6 +143,16 @@ in
           Additional packages added to $PATH in the wrapped .zshenv.
         '';
       };
+    hmSessionVariables = {
+      enable = lib.mkEnableOption "home-manager sessionVariables";
+      scriptLocation = lib.mkOption {
+        type = lib.types.str;
+        description = ''
+          Absolute path of the `hm-session-vars.sh` script to be loaded.
+        '';
+        default = "~/.nix-profile/etc/profile.d/hm-session-vars.sh";
+      };
+    };
     direnv = {
       enable = lib.mkEnableOption "direnv integration";
       package = lib.mkPackageOption pkgs "direnv" { };
