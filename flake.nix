@@ -52,6 +52,9 @@
           };
           zsh = { pkgs, wlib, lib, ... }: {
             imports = [ (import ./zeno-zsh.nix) ];
+            hmSessionVariables = {
+              enable = lib.mkDefault true;
+            };
             starship = {
               enable = lib.mkDefault true;
             };
@@ -72,7 +75,9 @@
               }
               { 
                 package = pkgs.zsh-vi-mode;
-                init = "zvm_after_init_commands+=('source <(fzf --zsh)')";
+                init = lib.optionalString 
+                  config.flake.wrappers.zsh.fzf.enable 
+                  "zvm_after_init_commands+=('source <(fzf --zsh)')";
               } 
               { 
                 package = pkgs.oh-my-zsh;
