@@ -99,7 +99,7 @@ let
       ''}
       ${lib.optionalString config.fzf.enable ''
         ## Fzf integration
-        source <(fzf --zsh)
+        ${config.fzf.init}
       ''}
 
       load init.zsh
@@ -160,6 +160,10 @@ in
     fzf = {
       enable = lib.mkEnableOption "fzf integration";
       package = lib.mkPackageOption pkgs "fzf" { };
+      init = lib.mkOption {
+        type = lib.types.str;
+        default = "source <(fzf --zsh)";
+      };
     };
     starship = {
       enable = lib.mkEnableOption "starship integration";
@@ -169,7 +173,7 @@ in
   config = {
     package = pkgs.zsh;
     runtimePackages = with pkgs; 
-      [ cowsay ]
+      [ ]
       ++ lib.optional config.starship.enable config.starship.package
       ++ lib.optional config.direnv.enable config.direnv.package
       ++ lib.optional config.fzf.enable config.fzf.package;
