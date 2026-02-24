@@ -1,5 +1,5 @@
 { self, inputs, ... }: {
-  flake.homeManagerModules = {
+  flake.homeModules = {
     zsh = inputs.wrappers.lib.mkInstallModule {
       loc = [ "home" "packages" ];
       name = "zsh";
