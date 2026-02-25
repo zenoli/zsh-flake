@@ -3,15 +3,17 @@
   hmSessionVariables = {
     enable = lib.mkDefault true;
   };
-  starship = {
-    enable = lib.mkDefault true;
-  };
-  direnv = {
-    enable = lib.mkDefault true;
-    package = direnv;
-  };
-  fzf = {
-    enable = lib.mkDefault true;
+  integrations = {
+    starship = {
+      enable = lib.mkDefault true;
+    };
+    direnv = {
+      enable = lib.mkDefault true;
+      package = direnv;
+    };
+    fzf = {
+      enable = lib.mkDefault true;
+    };
   };
   plugins = [ 
     { 
@@ -21,7 +23,7 @@
     { 
       package = pkgs.zsh-vi-mode;
       init = lib.optionalString 
-        config.fzf.enable 
+        config.integrations.fzf.enable 
         "zvm_after_init_commands+=('source <(fzf --zsh)')";
     } 
     { 

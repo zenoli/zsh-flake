@@ -1,50 +1,24 @@
 { config, wlib, lib, pkgs, ... }:
 let
-  zshPluginType = lib.types.submodule ({config, ... } :{
-    options = {
-      package = lib.mkOption {
-        type = lib.types.nullOr lib.types.package;
-        default = null;
-      };
-      src = lib.mkOption {
-        type = lib.types.path;
-        description = ''
-          Path to the plugin folder.
+  pluginType = (import ./types/plugin.nix) { inherit lib; };
+  integrationType = (import ./types/integration.nix) { inherit pkgs lib; };
 
-          Will be added to {env}`fpath` and {env}`PATH`.
-        '';
-        default = config.package.src;
-      };
-      name = lib.mkOption {
-        type = lib.types.str;
-        default = if config.package != null 
-        then config.package.pname
-        else throw "Plugin option 'name' must be provided if 'package' is null.";
-      };
-      file = lib.mkOption {
-        type = lib.types.str;
-        default = "${config.name}.plugin.zsh";
-      };
-      init = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = null;
-      };
-      disable = lib.mkOption {
-        default = false;
-        example = true;
-        description = "Whether to disable plugin ${config.name}.";
-        type = lib.types.bool;
-      };
-    };
-  });
-  enabledPlugins = lib.filter (plugin: !plugin.disable) config.plugins;
+  enabledPlugins = lib.filter (p: !p.disable) config.plugins;
+  enabledIntegrations = lib.filterAttrs (_: i: i.enable) config.integrations;
+
+  integrationConfigs = lib.concatMapAttrsStringSep 
+    "\n"
+    (name: integration: ''
+      ## ${name} integration
+      ${integration.init}
+    '') enabledIntegrations;
   zshPluginConfigs = lib.concatMapStringsSep "\n" (
     plugin:
     builtins.concatStringsSep "\n" (
       [
         ''
           ## ${plugin.name}
-          source ${plugin.src}/${plugin.file}
+          source "${plugin.src}/${plugin.file}"
         ''
       ]
       ++ (lib.optional (plugin.init != null) plugin.init
@@ -62,7 +36,7 @@ let
     text = ''
       # Sources a file relative to the src directory
       function load {
-        source ${./src}/$1
+        source "${./src}/$1"
       }
 
       # Cleans up the environment
@@ -89,18 +63,7 @@ let
 
       # Integrations
 
-      ${lib.optionalString config.starship.enable ''
-        ## Starship integration
-        eval "$(starship init zsh)"
-      ''}
-      ${lib.optionalString config.direnv.enable ''
-        ## Direnv integration
-        eval "$(direnv hook zsh)"
-      ''}
-      ${lib.optionalString config.fzf.enable ''
-        ## Fzf integration
-        ${config.fzf.init}
-      ''}
+      ${integrationConfigs}
 
       load init.zsh
 
@@ -133,7 +96,7 @@ in
     };
     plugins = lib.mkOption {
       default = [ ];
-      type = lib.types.listOf zshPluginType;
+      type = lib.types.listOf pluginType;
       description = "List of zsh plugins.";
     };
     runtimePackages = lib.mkOption {
@@ -153,30 +116,18 @@ in
         default = "~/.nix-profile/etc/profile.d/hm-session-vars.sh";
       };
     };
-    direnv = {
-      enable = lib.mkEnableOption "direnv integration";
-      package = lib.mkPackageOption pkgs "direnv" { };
-    };
-    fzf = {
-      enable = lib.mkEnableOption "fzf integration";
-      package = lib.mkPackageOption pkgs "fzf" { };
-      init = lib.mkOption {
-        type = lib.types.str;
-        default = "source <(fzf --zsh)";
-      };
-    };
-    starship = {
-      enable = lib.mkEnableOption "starship integration";
-      package = lib.mkPackageOption pkgs "starship" { };
+    integrations = lib.mkOption {
+      type = lib.types.attrsOf integrationType;
     };
   };
   config = {
     package = pkgs.zsh;
-    runtimePackages = with pkgs; 
-      [ ]
-      ++ lib.optional config.starship.enable config.starship.package
-      ++ lib.optional config.direnv.enable config.direnv.package
-      ++ lib.optional config.fzf.enable config.fzf.package;
+    integrations = {
+      fzf.init = lib.mkDefault ''source <(fzf --zsh)'';
+      starship.init = ''eval "$(starship init zsh)"'';
+      direnv.init = ''eval "$(direnv hook zsh)"'';
+    };
+    runtimePackages = lib.mapAttrsToList (_: i : i.package) enabledIntegrations;
     env = {
       ZDOTDIR = "${zdotdir}";
     };
