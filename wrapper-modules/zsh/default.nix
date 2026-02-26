@@ -1,74 +1,9 @@
 { config, wlib, lib, pkgs, ... }:
 let
-  pluginType = (import ./types/plugin.nix) { inherit lib; };
-  integrationType = (import ./types/integration.nix) { inherit pkgs lib; };
-
-  enabledPlugins = lib.filter (p: !p.disable) config.plugins;
-  enabledIntegrations = lib.filterAttrs (_: i: i.enable) config.integrations;
-
-  integrationConfigs = lib.concatMapAttrsStringSep 
-    "\n"
-    (name: integration: ''
-      ## ${name} integration
-      ${integration.init}
-    '') enabledIntegrations;
-  zshPluginConfigs = lib.concatMapStringsSep "\n" (
-    plugin:
-    builtins.concatStringsSep "\n" (
-      [
-        ''
-          ## ${plugin.name}
-          source "${plugin.src}/${plugin.file}"
-        ''
-      ]
-      ++ (lib.optional (plugin.init != null) plugin.init
-      )
-    )
-  ) enabledPlugins;
-  zdotdir = pkgs.symlinkJoin {
-    name = "zdotdir";
-    paths = [ zshrc zshenv ];
-
-  };
   zshrc = config.pkgs.writeTextFile {
     name = "zshrc";
     destination = "/.zshrc";
-    text = ''
-      # Sources a file relative to the src directory
-      function load {
-        source "${./src}/$1"
-      }
-
-      # Cleans up the environment
-      function cleanup {
-        unfunction load
-        # unset ZDOTDIR
-      }
-
-      # Completion
-
-      local zsh_cache_dir="''${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
-      if [[ ! -d $zsh_cache_dir ]]; then
-          echo "Creating $zsh_cache_dir"
-          mkdir -p $zsh_cache_dir
-      fi
-      zcompdump_file="$zsh_cache_dir/zcompdump"
-
-      autoload -U compinit && compinit -d $zcompdump_file
-
-
-      # Plugins
-
-      ${zshPluginConfigs}
-
-      # Integrations
-
-      ${integrationConfigs}
-
-      load init.zsh
-
-      cleanup
-    '';
+    text = config.zshrcContent;
   };
   zshenv = config.pkgs.writeTextFile {
     name = "zshenv";
@@ -85,19 +20,50 @@ let
       export PATH=$PATH:${pkgs.lib.makeBinPath config.runtimePackages}
     '';
   };
+  zdotdir = pkgs.symlinkJoin {
+    name = "zdotdir";
+    paths = [ zshrc zshenv ];
+  };
 in
 {
-  imports = [ wlib.modules.default ];
+  imports = [ 
+    wlib.modules.default 
+    ./completion.nix
+    ./plugins.nix
+    ./integrations.nix
+  ];
   options = {
     zdotdir = lib.mkOption {
       type = lib.types.path;
       default = zdotdir;
       readOnly = true;
     };
-    plugins = lib.mkOption {
-      default = [ ];
-      type = lib.types.listOf pluginType;
-      description = "List of zsh plugins.";
+    zshrcContent = lib.mkOption { 
+      type = lib.types.str; 
+      default = ''
+      # Sources a file relative to the src directory
+      function load {
+        source "${./src}/$1"
+      }
+
+      # Cleans up the environment
+      function cleanup {
+        unfunction load
+        # unset ZDOTDIR
+      }
+
+      # Completion
+
+      ${lib.optionalString config.completion.enable config.completion.init}
+
+      # plugins
+
+      ${config.pluginConfig}
+
+      # integrations
+
+      ${config.integrationConfig}
+      '';
     };
     runtimePackages = lib.mkOption {
         type = lib.types.listOf lib.types.package;
@@ -116,18 +82,9 @@ in
         default = "~/.nix-profile/etc/profile.d/hm-session-vars.sh";
       };
     };
-    integrations = lib.mkOption {
-      type = lib.types.attrsOf integrationType;
-    };
   };
   config = {
     package = pkgs.zsh;
-    integrations = {
-      fzf.init = lib.mkDefault ''source <(fzf --zsh)'';
-      starship.init = ''eval "$(starship init zsh)"'';
-      direnv.init = ''eval "$(direnv hook zsh)"'';
-    };
-    runtimePackages = lib.mapAttrsToList (_: i : i.package) enabledIntegrations;
     env = {
       ZDOTDIR = "${zdotdir}";
     };

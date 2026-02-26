@@ -1,4 +1,4 @@
-{ lib }: 
+{ lib, ... }: 
 lib.types.submodule ({ config, ... }: {
   options = {
     package = lib.mkOption {
