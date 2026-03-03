@@ -1,6 +1,6 @@
 { config, wlib, lib, pkgs, ... }:
 let
-  types = (import ./types) { inherit pkgs lib; };
+  types = (import ../types) { inherit pkgs lib; };
   enabledIntegrations = lib.filterAttrs (_: i: i.enable) config.integrations;
   integrationConfig = lib.concatMapAttrsStringSep 
     "\n"
@@ -17,7 +17,11 @@ in
     };
     integrationConfig = lib.mkOption {
       type = lib.types.str;
-      default = integrationConfig;
+      default = ''
+      # integrations
+
+      ${integrationConfig}
+      '';
       readOnly = true;
     };
   };

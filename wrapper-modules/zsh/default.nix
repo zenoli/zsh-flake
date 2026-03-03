@@ -28,9 +28,7 @@ in
 {
   imports = [ 
     wlib.modules.default 
-    ./completion.nix
-    ./plugins.nix
-    ./integrations.nix
+    ./modules
   ];
   options = {
     zdotdir = lib.mkOption {

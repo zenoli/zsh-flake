@@ -1,6 +1,6 @@
 { config, wlib, lib, pkgs, ... }:
 let
-  types = (import ./types) { inherit pkgs lib; };
+  types = (import ../types) { inherit pkgs lib; };
   enabledPlugins = lib.filter (p: !p.disable) config.plugins;
   pluginConfig = lib.concatMapStringsSep "\n" (
     plugin:
@@ -25,8 +25,12 @@ in
     };
     pluginConfig = lib.mkOption {
       type = lib.types.str;
-      default = pluginConfig;
       readOnly = true;
+      default = ''
+      # plugins
+
+      ${pluginConfig}
+      '';
     };
   };
 }
