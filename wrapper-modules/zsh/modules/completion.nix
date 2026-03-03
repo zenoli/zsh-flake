@@ -6,6 +6,8 @@
       init = lib.mkOption {
         type = lib.types.str;
         default = ''
+          # completion
+
           local zsh_cache_dir="''${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
           if [[ ! -d $zsh_cache_dir ]]; then
               echo "Creating $zsh_cache_dir"

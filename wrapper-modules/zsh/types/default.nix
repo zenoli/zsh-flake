@@ -1,19 +1,12 @@
-{ pkgs, lib }:
+{ pkgs, lib, ... }:
 let
-  files = builtins.readDir ./.;
-  nixFiles =
-    lib.filterAttrs
-      (name: type: type == "regular" && name != "default.nix")
-      files;
+  stripExtension = name: builtins.head (builtins.match "^(.*)\\.nix$" name);
+  importType = name: (import ./${name}) { inherit pkgs lib; };
 
-  stripExtension = name:
-    builtins.head (builtins.match "^(.*)\\.nix$" name);
-
-  types = lib.mapAttrs' (name: _:
-    {
-      name = stripExtension name;
-      value = (import ./${name}) { inherit pkgs lib; };
-    })
-  nixFiles;
+  types = lib.pipe ./. [
+    builtins.readDir
+    (lib.filterAttrs (name: type: type == "regular" && name != "default.nix"))
+    (lib.mapAttrs' (name: _: lib.nameValuePair (stripExtension name) (importType name)))
+  ];
 in 
   types
