@@ -1,4 +1,7 @@
 { config, wlib, lib, pkgs, ... }:
+let
+  cfg = config.completion;
+in 
 {
   options = {
     completion = {
@@ -6,8 +9,6 @@
       init = lib.mkOption {
         type = lib.types.str;
         default = ''
-          # completion
-
           local zsh_cache_dir="''${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
           if [[ ! -d $zsh_cache_dir ]]; then
               echo "Creating $zsh_cache_dir"
@@ -20,4 +21,5 @@
     };
   };
   config.completion.enable = lib.mkDefault true;
+  config.snippets.completion = lib.optionalString cfg.enable cfg.init;
 }

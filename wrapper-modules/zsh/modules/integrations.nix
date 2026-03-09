@@ -15,15 +15,6 @@ in
       default = {};
       type = lib.types.attrsOf types.integration;
     };
-    integrationConfig = lib.mkOption {
-      type = lib.types.str;
-      default = ''
-      # integrations
-
-      ${integrationConfig}
-      '';
-      readOnly = true;
-    };
   };
   config = {
     integrations = {
@@ -31,6 +22,7 @@ in
       starship.init = ''eval "$(starship init zsh)"'';
       direnv.init = ''eval "$(direnv hook zsh)"'';
     };
+    snippets.integrations = integrationConfig;
     runtimePackages = lib.mapAttrsToList (_: i : i.package) enabledIntegrations;
   };
 }
