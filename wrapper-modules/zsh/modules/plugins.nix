@@ -23,14 +23,6 @@ in
       type = lib.types.listOf types.plugin;
       description = "List of zsh plugins.";
     };
-    pluginConfig = lib.mkOption {
-      type = lib.types.str;
-      readOnly = true;
-      default = ''
-      # plugins
-
-      ${pluginConfig}
-      '';
-    };
   };
+  config.snippets.plugins = wlib.dag.entryAfter [ "completion" ] pluginConfig;
 }

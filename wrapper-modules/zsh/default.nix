@@ -24,6 +24,13 @@ let
     name = "zdotdir";
     paths = [ zshrc zshenv ];
   };
+  mergedSnippets = lib.concatMapStringsSep "\n\n" 
+    (x: lib.trim ''
+    # ${x.name}
+
+    ${x.data}
+    '') 
+    (wlib.dag.sortAndUnwrap { dag = config.snippets; });
 in
 {
   imports = [ 
@@ -35,6 +42,9 @@ in
       type = lib.types.path;
       default = zdotdir;
       readOnly = true;
+    };
+    snippets = lib.mkOption {
+      type = wlib.types.dagOf lib.types.str;
     };
     zshrcContent = lib.mkOption { 
       type = lib.types.str; 
@@ -50,17 +60,7 @@ in
         # unset ZDOTDIR
       }
 
-      # Completion
-
-      ${lib.optionalString config.completion.enable config.completion.init}
-
-      # plugins
-
-      ${config.pluginConfig}
-
-      # integrations
-
-      ${config.integrationConfig}
+      ${mergedSnippets}
       '';
     };
     runtimePackages = lib.mkOption {
