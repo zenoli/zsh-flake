@@ -35,7 +35,7 @@ in
     };
   };
   config = {
-    package = pkgs.direnv;
+    package = lib.mkDefault pkgs.direnv;
     env = { DIRENV_CONFIG = "${direnvConfig}"; };
   };
 }

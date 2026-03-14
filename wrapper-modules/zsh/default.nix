@@ -31,6 +31,7 @@ let
     ${x.data}
     '') 
     (wlib.dag.sortAndUnwrap { dag = config.snippets; });
+  types = (import ./types) { inherit pkgs lib; };
 in
 {
   imports = [ 
@@ -38,6 +39,10 @@ in
     ./modules
   ];
   options = {
+    integrations2 = lib.mkOption {
+      default = {};
+      type = lib.types.attrsOf types.integration2;
+    };
     zdotdir = lib.mkOption {
       type = lib.types.path;
       default = zdotdir;
