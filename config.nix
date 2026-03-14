@@ -1,4 +1,3 @@
-{ direnv }: 
 { pkgs, config, wlib, lib, ... }: {
   hmSessionVariables = {
     enable = lib.mkDefault true;
@@ -6,13 +5,15 @@
   integrations = {
     starship = {
       enable = lib.mkDefault true;
+      package = pkgs.starship;
     };
-    direnv = {
-      enable = lib.mkDefault true;
-      package = direnv;
-    };
+    # direnv = {
+    #   enable = lib.mkDefault true;
+    #   nix-direnv.enable = true;
+    # };
     fzf = {
       enable = lib.mkDefault true;
+      package = pkgs.fzf;
     };
   };
   plugins = [ 
@@ -32,5 +33,9 @@
       disable = false;
     } 
   ];
+  # ints.direnv = {
+  #   enable = true;
+  #   nix-direnv.enable = true;
+  # };
 }
 

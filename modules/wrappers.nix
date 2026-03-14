@@ -6,11 +6,11 @@
     };
     zsh = { pkgs, wlib, lib, ... }: 
     let
-      direnvWrapper = withSystem pkgs.stdenv.hostPlatform.system (
-        { config, ... }: config.packages.direnv
-      );
+      # direnvWrapper = withSystem pkgs.stdenv.hostPlatform.system (
+      #   { config, ... }: config.packages.direnv
+      # );
       zshWrapperModule = import (self + /wrapper-modules/zsh);
-      zshWrapperConfig = import (self + /config.nix) { direnv = direnvWrapper; };
+      zshWrapperConfig = import (self + /config.nix);
     in 
     {
       imports = [ 
