@@ -13,6 +13,12 @@
     fzf = {
       enable = lib.mkDefault true;
     };
+    hello = {
+      enable = true;
+      addToPath = true;
+      init = "${lib.getExe config.integrations.hello.runtimePackage} -g 'hello olivier'";
+    };
+
   };
   plugins = [ 
     { 

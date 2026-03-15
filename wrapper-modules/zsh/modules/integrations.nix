@@ -1,25 +1,24 @@
 { config, wlib, lib, pkgs, ... }:
 let
-  types = (import ../types) { inherit pkgs lib; };
-
+  # Interface
   integratable = ({ config, name, ... }: {
     options = {
       enable = lib.mkEnableOption "${name} integration";
       runtimePackage = lib.mkPackageOption pkgs name {};
+      addToPath = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+      };
       init = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
+        type = lib.types.nullOr (lib.types.either 
+          lib.types.str 
+          (lib.types.functionTo lib.types.str) # exe: string
+        );
         default = null;
       };
     };
   });
 
-  wrapperInjector = { config, ...}: {
-    config = { 
-      inherit pkgs;
-      runtimePackage = config.wrapper;
-    };
-  };
-  
   integration = lib.types.submodule integratable;
   wrapperIntegrationWith = wrapperModule: wlib.types.subWrapperModuleWith {
     modules = [
@@ -38,13 +37,19 @@ let
 
 
   enabledIntegrations = lib.filterAttrs (_: i: i.enable) (builtins.trace (builtins.attrNames config.integrations) config.integrations);
+  runtimeIntegrations = lib.filterAttrs (_: i: i.addToPath) enabledIntegrations;
   initializableIntegrations = lib.filterAttrs (_: i: i.init != null) enabledIntegrations;
 
+  getInitCommand = integration: 
+    if lib.isFunction integration.init then 
+      (integration.init (lib.getExe integration.runtimePackage)) 
+    else 
+      integration.init;
   integrationConfig = lib.concatMapAttrsStringSep 
     "\n"
     (name: integration: ''
       ## ${name} integration
-      ${integration.init}
+      ${getInitCommand integration}
     '') initializableIntegrations;
 in
 {
@@ -60,12 +65,13 @@ in
     };
   };
   config = {
-    integrations = {
-      fzf.init = lib.mkDefault ''source <(fzf --zsh)'';
-      starship.init = ''eval "$(starship init zsh)"'';
-      direnv.init = ''eval "$(direnv hook zsh)"'';
+    integrations =  {
+      # Preset init commands
+      fzf.init = lib.mkDefault (exe: ''source <(${exe} --zsh)'');
+      starship.init = lib.mkDefault (exe: ''eval "$(${exe} init zsh)"'');
+      direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
     };
     snippets.integrations = integrationConfig;
-    runtimePackages = lib.mapAttrsToList (_: i : i.runtimePackage) enabledIntegrations;
+    runtimePackages = lib.mapAttrsToList (_: i : i.runtimePackage) runtimeIntegrations;
   };
 }
