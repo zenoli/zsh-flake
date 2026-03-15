@@ -8,7 +8,10 @@
     };
     direnv = {
       enable = lib.mkDefault true;
-      nix-direnv.enable = true;
+      settings = {
+        nix-direnv.enable = true;
+        package = pkgs.direnv;
+      };
     };
     fzf = {
       enable = lib.mkDefault true;

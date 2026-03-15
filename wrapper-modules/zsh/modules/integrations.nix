@@ -20,17 +20,23 @@ let
   });
 
   integration = lib.types.submodule integratable;
-  wrapperIntegrationWith = wrapperModule: wlib.types.subWrapperModuleWith {
+  wrapperIntegrationWith = wrapperModule: lib.types.submoduleWith {
     modules = [
-      wrapperModule
+      ({config, ... }: {
+        options.settings = lib.mkOption {
+          type = wlib.types.subWrapperModule wrapperModule;
+        };
+        config.settings.pkgs = pkgs;
+        config.runtimePackage = config.settings.wrapper;
+      })
       integratable
     ];
   };
   mkWrapperIntegrationOption = wrapperModule: lib.mkOption {
-    default = { 
-      inherit pkgs;
-      runtimePackage = config.wrapper;
-    };
+    # default = { 
+    #   settings.pkgs = pkgs;
+    #   runtimePackage = config.settings.wrapper;
+    # };
     type = wrapperIntegrationWith wrapperModule;
   };
 

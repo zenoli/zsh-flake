@@ -24,7 +24,7 @@ let
       }
       runtime_packages="${pkgs.lib.makeBinPath config.runtimePackages}"
       if [[ $PATH != ''${runtime_packages}:* ]]; then
-        PATH="''${runtime_packages}:$PATH"
+        export PATH="''${runtime_packages}:$PATH"
       fi
     '';
   };
