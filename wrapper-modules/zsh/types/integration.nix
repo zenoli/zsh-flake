@@ -1,7 +1,6 @@
 { pkgs, lib }: 
 lib.types.submodule ({ config, name, ... }: {
-  _file = ./integration.nix;
-  freeformType = lib.types.attrsOf lib.types.anything;
+  # freeformType = lib.types.attrsOf lib.types.anything;
 
   options = {
     enable = lib.mkEnableOption "${name} integration";
@@ -11,6 +10,10 @@ lib.types.submodule ({ config, name, ... }: {
     };
     init = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
+      default = null;
+    };
+    settings = lib.mkOption {
+      type = lib.types.anything;
       default = null;
     };
   };

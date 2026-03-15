@@ -7,10 +7,10 @@
       enable = lib.mkDefault true;
       package = pkgs.starship;
     };
-    # direnv = {
-    #   enable = lib.mkDefault true;
-    #   nix-direnv.enable = true;
-    # };
+    direnv = {
+      enable = lib.mkDefault true;
+      nix-direnv.enable = true;
+    };
     fzf = {
       enable = lib.mkDefault true;
       package = pkgs.fzf;
@@ -33,9 +33,5 @@
       disable = false;
     } 
   ];
-  # ints.direnv = {
-  #   enable = true;
-  #   nix-direnv.enable = true;
-  # };
 }
 
