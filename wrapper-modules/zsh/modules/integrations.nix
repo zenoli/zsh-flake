@@ -4,8 +4,8 @@ let
   integratable = ({ config, name, ... }: {
     options = {
       enable = lib.mkEnableOption "${name} integration";
-      runtimePackage = lib.mkPackageOption pkgs name {};
-      addToPath = lib.mkOption {
+      package = lib.mkPackageOption pkgs name {};
+      install = lib.mkOption {
         type = lib.types.bool;
         default = true;
       };
@@ -26,29 +26,25 @@ let
         options.settings = lib.mkOption {
           type = wlib.types.subWrapperModule wrapperModule;
         };
-        config.settings.pkgs = pkgs;
-        config.runtimePackage = config.settings.wrapper;
+        config.settings.pkgs = lib.mkDefault pkgs;
+        config.package = lib.mkDefault config.settings.wrapper;
       })
       integratable
     ];
   };
   mkWrapperIntegrationOption = wrapperModule: lib.mkOption {
-    # default = { 
-    #   settings.pkgs = pkgs;
-    #   runtimePackage = config.settings.wrapper;
-    # };
     type = wrapperIntegrationWith wrapperModule;
   };
 
 
 
   enabledIntegrations = lib.filterAttrs (_: i: i.enable) (builtins.trace (builtins.attrNames config.integrations) config.integrations);
-  runtimeIntegrations = lib.filterAttrs (_: i: i.addToPath) enabledIntegrations;
+  runtimeIntegrations = lib.filterAttrs (_: i: i.install) enabledIntegrations;
   initializableIntegrations = lib.filterAttrs (_: i: i.init != null) enabledIntegrations;
 
   getInitCommand = integration: 
     if lib.isFunction integration.init then 
-      (integration.init (lib.getExe integration.runtimePackage)) 
+      (integration.init (lib.getExe integration.package)) 
     else 
       integration.init;
   integrationConfig = lib.concatMapAttrsStringSep 
@@ -78,6 +74,6 @@ in
       direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
     };
     snippets.integrations = integrationConfig;
-    runtimePackages = lib.mapAttrsToList (_: i : i.runtimePackage) runtimeIntegrations;
+    runtimePackages = lib.mapAttrsToList (_: i : i.package) runtimeIntegrations;
   };
 }
