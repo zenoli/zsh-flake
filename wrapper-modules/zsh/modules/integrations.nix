@@ -2,6 +2,18 @@
 let
   types = (import ../types) { inherit pkgs lib; };
 
+  integratable = ({ config, name, ... }: {
+    options = {
+      enable = lib.mkEnableOption "${name} integration";
+      runtimePackage = lib.mkPackageOption pkgs name {};
+      init = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+      };
+    };
+  });
+
+
   enabledIntegrations = lib.filterAttrs (_: i: i.enable) (builtins.trace (builtins.attrNames config.integrations) config.integrations);
   initializableIntegrations = lib.filterAttrs (_: i: i.init != null) enabledIntegrations;
 
@@ -17,29 +29,19 @@ in
     integrations = lib.mkOption {
       default = {};
       type = lib.types.submodule ({ config, ...}: {
-        freeformType = lib.types.attrsOf types.integration;
+        freeformType = lib.types.attrsOf (lib.types.submodule integratable);
         options = {
           direnv = lib.mkOption {
             default = {};
             type = wlib.types.subWrapperModule (
               (lib.toList ../../direnv.nix)
               ++ [
+                integratable
                 ({ config, ...}: {
-                  options.enable = lib.mkEnableOption "direnv integration";
-                  options.init = lib.mkOption {
-                    type = lib.types.nullOr lib.types.str;
-                    default = null;
+                  config = { 
+                    inherit pkgs;
+                    runtimePackage = config.wrapper;
                   };
-                  options.useWrapper = lib.mkOption {
-                    type = lib.types.boolean;
-                    default = true;
-                  };
-                  # config.package = config.wrapper;
-                  options.runtimePackage = lib.mkOption {
-                    type = lib.types.package;
-                    default = config.wrapper;
-                  };
-                  config = { inherit pkgs; };
                 })
               ]
             );
@@ -55,9 +57,6 @@ in
       direnv.init = ''eval "$(direnv hook zsh)"'';
     };
     snippets.integrations = integrationConfig;
-    # runtimePackages = lib.mapAttrsToList (_: i : i.package) enabledIntegrations;
-    runtimePackages = lib.mapAttrsToList (_: i:
-      if builtins.hasAttr "wrapper" i then i.runtimePackage else i.package
-    ) enabledIntegrations;
+    runtimePackages = lib.mapAttrsToList (_: i : i.runtimePackage) enabledIntegrations;
   };
 }
