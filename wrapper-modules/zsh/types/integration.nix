@@ -1,7 +1,5 @@
 { pkgs, lib }: 
 lib.types.submodule ({ config, name, ... }: {
-  # freeformType = lib.types.attrsOf lib.types.anything;
-
   options = {
     enable = lib.mkEnableOption "${name} integration";
     package = lib.mkOption {

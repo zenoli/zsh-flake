@@ -9,6 +9,10 @@ let
     name = "zshenv";
     destination = "/.zshenv";
     text = ''
+      # Only execute this file once per shell.
+      if [ -v "''${__WRAPPED_ZSHENV_SOURCED-}" ]; then return; fi
+      __WRAPPED_ZSHENV_SOURCED=1
+
       ${
         let 
           sw = config.hmSessionVariables;
@@ -16,8 +20,12 @@ let
           lib.optionalString sw.enable ''
             # Home Manager session variables
             [[ -f ${sw.scriptLocation} ]] && source ${sw.scriptLocation}
-          ''}
-      export PATH=$PATH:${pkgs.lib.makeBinPath config.runtimePackages}
+          ''
+      }
+      runtime_packages="${pkgs.lib.makeBinPath config.runtimePackages}"
+      if [[ $PATH != ''${runtime_packages}:* ]]; then
+        PATH="''${runtime_packages}:$PATH"
+      fi
     '';
   };
   zdotdir = pkgs.symlinkJoin {
