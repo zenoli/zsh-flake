@@ -10,7 +10,6 @@
       enable = lib.mkDefault true;
       settings = {
         nix-direnv.enable = true;
-        package = pkgs.direnv;
       };
     };
     fzf = {
@@ -18,8 +17,8 @@
     };
     hello = {
       enable = true;
-      addToPath = true;
-      init = "${lib.getExe config.integrations.hello.runtimePackage} -g 'hello olivier'";
+      install = true;
+      init = exe: "-g '${exe} olivier'";
     };
 
   };
