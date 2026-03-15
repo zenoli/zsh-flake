@@ -5,7 +5,6 @@
   integrations = {
     starship = {
       enable = lib.mkDefault true;
-      package = pkgs.starship;
     };
     direnv = {
       enable = lib.mkDefault true;
@@ -13,7 +12,6 @@
     };
     fzf = {
       enable = lib.mkDefault true;
-      package = pkgs.fzf;
     };
   };
   plugins = [ 
