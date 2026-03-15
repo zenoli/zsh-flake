@@ -13,19 +13,7 @@ let
     '') initializableIntegrations;
 in
 {
-  # imports = [
-  #   (wlib.mkInstallModule {
-  #     name = "direnv";
-  #     as_list = false;
-  #     loc = [ "integrations" "direnv" "package" ];
-  #     optloc = [ "integrations" ];
-  #     value = (import ../../direnv.nix);
-  #   })
-  # ];
   options = {
-    # integrations = lib.mkOption {
-    #   type = lib.types.attrsOf types.integration;
-    # };
     integrations = lib.mkOption {
       default = {};
       type = lib.types.submodule ({ config, ...}: {
@@ -36,15 +24,23 @@ in
             type = wlib.types.subWrapperModule (
               (lib.toList ../../direnv.nix)
               ++ [
-                {
+                ({ config, ...}: {
                   options.enable = lib.mkEnableOption "direnv integration";
                   options.init = lib.mkOption {
                     type = lib.types.nullOr lib.types.str;
                     default = null;
                   };
-                  config.pkgs = lib.mkIf (pkgs != null) pkgs;
-                  # config.package = config.direnv.wrapper;
-                }
+                  options.useWrapper = lib.mkOption {
+                    type = lib.types.boolean;
+                    default = true;
+                  };
+                  # config.package = config.wrapper;
+                  options.runtimePackage = lib.mkOption {
+                    type = lib.types.package;
+                    default = config.wrapper;
+                  };
+                  config = { inherit pkgs; };
+                })
               ]
             );
           };
@@ -59,6 +55,9 @@ in
       direnv.init = ''eval "$(direnv hook zsh)"'';
     };
     snippets.integrations = integrationConfig;
-    runtimePackages = lib.mapAttrsToList (_: i : i.package) enabledIntegrations;
+    # runtimePackages = lib.mapAttrsToList (_: i : i.package) enabledIntegrations;
+    runtimePackages = lib.mapAttrsToList (_: i:
+      if builtins.hasAttr "wrapper" i then i.runtimePackage else i.package
+    ) enabledIntegrations;
   };
 }
