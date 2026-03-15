@@ -13,6 +13,29 @@ let
     };
   });
 
+  wrapperInjector = { config, ...}: {
+    config = { 
+      inherit pkgs;
+      runtimePackage = config.wrapper;
+    };
+  };
+  
+  integration = lib.types.submodule integratable;
+  wrapperIntegrationWith = wrapperModule: wlib.types.subWrapperModuleWith {
+    modules = [
+      wrapperModule
+      integratable
+    ];
+  };
+  mkWrapperIntegrationOption = wrapperModule: lib.mkOption {
+    default = { 
+      inherit pkgs;
+      runtimePackage = config.wrapper;
+    };
+    type = wrapperIntegrationWith wrapperModule;
+  };
+
+
 
   enabledIntegrations = lib.filterAttrs (_: i: i.enable) (builtins.trace (builtins.attrNames config.integrations) config.integrations);
   initializableIntegrations = lib.filterAttrs (_: i: i.init != null) enabledIntegrations;
@@ -29,23 +52,9 @@ in
     integrations = lib.mkOption {
       default = {};
       type = lib.types.submodule ({ config, ...}: {
-        freeformType = lib.types.attrsOf (lib.types.submodule integratable);
+        freeformType = lib.types.attrsOf integration;
         options = {
-          direnv = lib.mkOption {
-            default = {};
-            type = wlib.types.subWrapperModule (
-              (lib.toList ../../direnv.nix)
-              ++ [
-                integratable
-                ({ config, ...}: {
-                  config = { 
-                    inherit pkgs;
-                    runtimePackage = config.wrapper;
-                  };
-                })
-              ]
-            );
-          };
+          direnv = mkWrapperIntegrationOption ../../direnv.nix;
         };
       });
     };
