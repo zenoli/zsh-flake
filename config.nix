@@ -22,7 +22,6 @@
     };
 
   };
-  # extraPackages = [ pkgs.oh-my-zsh ];
   plugins = [ 
     { 
       package = pkgs.zsh-fzf-tab; 
@@ -36,7 +35,7 @@
     } 
     { 
       package = pkgs.oh-my-zsh;
-      src = "${pkgs.oh-my-zsh}/share/oh-my-zsh";
+      # src = "${pkgs.oh-my-zsh}/share/oh-my-zsh";
       # src = builtins.trace "${pkgs.oh-my-zsh.src}" pkgs.oh-my-zsh.src;
       file = "plugins/git/git.plugin.zsh";
       disable = false;
