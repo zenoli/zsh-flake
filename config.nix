@@ -1,7 +1,4 @@
 { pkgs, config, wlib, lib, ... }: {
-  # hmSessionVariables = {
-  #   enable = lib.mkDefault true;
-  # };
   integrations = {
     starship = {
       enable = lib.mkDefault true;
@@ -15,12 +12,6 @@
     fzf = {
       enable = lib.mkDefault true;
     };
-    hello = {
-      enable = true;
-      install = true;
-      init = exe: "${exe} -g 'olivier'";
-    };
-
   };
   plugins = [ 
     { 
@@ -35,8 +26,6 @@
     } 
     { 
       package = pkgs.oh-my-zsh;
-      # src = "${pkgs.oh-my-zsh}/share/oh-my-zsh";
-      # src = builtins.trace "${pkgs.oh-my-zsh.src}" pkgs.oh-my-zsh.src;
       file = "plugins/git/git.plugin.zsh";
       disable = false;
     } 

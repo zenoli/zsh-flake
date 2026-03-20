@@ -38,7 +38,7 @@ let
 
 
 
-  enabledIntegrations = lib.filterAttrs (_: i: i.enable) (builtins.trace (builtins.attrNames config.integrations) config.integrations);
+  enabledIntegrations = lib.filterAttrs (_: i: i.enable) config.integrations;
   runtimeIntegrations = lib.filterAttrs (_: i: i.install) enabledIntegrations;
   initializableIntegrations = lib.filterAttrs (_: i: i.init != null) enabledIntegrations;
 
