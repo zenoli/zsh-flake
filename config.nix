@@ -1,7 +1,7 @@
 { pkgs, config, wlib, lib, ... }: {
-  hmSessionVariables = {
-    enable = lib.mkDefault true;
-  };
+  # hmSessionVariables = {
+  #   enable = lib.mkDefault true;
+  # };
   integrations = {
     starship = {
       enable = lib.mkDefault true;
@@ -18,10 +18,11 @@
     hello = {
       enable = true;
       install = true;
-      init = exe: "-g '${exe} olivier'";
+      init = exe: "${exe} -g 'olivier'";
     };
 
   };
+  # extraPackages = [ pkgs.oh-my-zsh ];
   plugins = [ 
     { 
       package = pkgs.zsh-fzf-tab; 
@@ -35,6 +36,8 @@
     } 
     { 
       package = pkgs.oh-my-zsh;
+      src = "${pkgs.oh-my-zsh}/share/oh-my-zsh";
+      # src = builtins.trace "${pkgs.oh-my-zsh.src}" pkgs.oh-my-zsh.src;
       file = "plugins/git/git.plugin.zsh";
       disable = false;
     } 

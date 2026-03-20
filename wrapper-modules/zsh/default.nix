@@ -5,33 +5,24 @@ let
     destination = "/.zshrc";
     text = config.zshrcContent;
   };
-  zshenv = config.pkgs.writeTextFile {
-    name = "zshenv";
-    destination = "/.zshenv";
-    text = ''
-      # Only execute this file once per shell.
-      if [ -v "''${__WRAPPED_ZSHENV_SOURCED-}" ]; then return; fi
-      __WRAPPED_ZSHENV_SOURCED=1
-
-      ${
-        let 
-          sw = config.hmSessionVariables;
-        in 
-          lib.optionalString sw.enable ''
-            # Home Manager session variables
-            [[ -f ${sw.scriptLocation} ]] && source ${sw.scriptLocation}
-          ''
-      }
-      runtime_packages="${pkgs.lib.makeBinPath config.runtimePackages}"
-      if [[ $PATH != ''${runtime_packages}:* ]]; then
-        export PATH="''${runtime_packages}:$PATH"
-      fi
-    '';
-  };
-  zdotdir = pkgs.symlinkJoin {
-    name = "zdotdir";
-    paths = [ zshrc zshenv ];
-  };
+  # zshenv = config.pkgs.writeTextFile {
+  #   name = "zshenv";
+  #   destination = "/.zshenv";
+  #   text = ''
+  #     # Only execute this file once per shell.
+  #     if [ -v "''${__WRAPPED_ZSHENV_SOURCED-}" ]; then return; fi
+  #     __WRAPPED_ZSHENV_SOURCED=1
+  #
+  #     runtime_packages="${pkgs.lib.makeBinPath config.runtimePackages}"
+  #     if [[ $PATH != ''${runtime_packages}:* ]]; then
+  #       export PATH="''${runtime_packages}:$PATH"
+  #     fi
+  #   '';
+  # };
+  # zdotdir = pkgs.symlinkJoin {
+  #   name = "zdotdir";
+  #   paths = [ zshrc zshenv ];
+  # };
   mergedSnippets = lib.concatMapStringsSep "\n\n" 
     (x: lib.trim ''
     # ${x.name}
@@ -43,15 +34,15 @@ let
 in
 {
   imports = [ 
-    wlib.modules.default 
+    wlib.wrapperModules.zsh 
     ./modules
   ];
   options = {
-    zdotdir = lib.mkOption {
-      type = lib.types.path;
-      default = zdotdir;
-      readOnly = true;
-    };
+    # zdotdir = lib.mkOption {
+    #   type = lib.types.path;
+    #   default = zdotdir;
+    #   readOnly = true;
+    # };
     snippets = lib.mkOption {
       type = wlib.types.dagOf lib.types.str;
     };
@@ -72,28 +63,29 @@ in
       ${mergedSnippets}
       '';
     };
-    runtimePackages = lib.mkOption {
-        type = lib.types.listOf lib.types.package;
-        default = [];
-        description = ''
-          Additional packages added to $PATH in the wrapped .zshenv.
-        '';
-      };
-    hmSessionVariables = {
-      enable = lib.mkEnableOption "home-manager sessionVariables";
-      scriptLocation = lib.mkOption {
-        type = lib.types.str;
-        description = ''
-          Absolute path of the `hm-session-vars.sh` script to be loaded.
-        '';
-        default = "~/.nix-profile/etc/profile.d/hm-session-vars.sh";
-      };
-    };
+    # runtimePackages = lib.mkOption {
+    #     type = lib.types.listOf lib.types.package;
+    #     default = [];
+    #     description = ''
+    #       Additional packages added to $PATH in the wrapped .zshenv.
+    #     '';
+    #   };
+    # hmSessionVariables = {
+    #   enable = lib.mkEnableOption "home-manager sessionVariables";
+    #   scriptLocation = lib.mkOption {
+    #     type = lib.types.str;
+    #     description = ''
+    #       Absolute path of the `hm-session-vars.sh` script to be loaded.
+    #     '';
+    #     default = "~/.nix-profile/etc/profile.d/hm-session-vars.sh";
+    #   };
+    # };
   };
   config = {
-    package = pkgs.zsh;
-    env = {
-      ZDOTDIR = "${zdotdir}";
-    };
+    zshrc.content = config.zshrcContent;
+    # package = pkgs.zsh;
+    # env = {
+    #   ZDOTDIR = "${zdotdir}";
+    # };
   };
 }
