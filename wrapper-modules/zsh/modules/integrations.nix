@@ -74,6 +74,6 @@ in
       direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
     };
     snippets.integrations = integrationConfig;
-    runtimePackages = lib.mapAttrsToList (_: i : i.package) runtimeIntegrations;
+    extraPackages = lib.mapAttrsToList (_: i : i.package) runtimeIntegrations;
   };
 }
