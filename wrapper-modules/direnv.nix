@@ -7,7 +7,7 @@ let
     paths = [
       (pkgs.writeTextFile {
         name = "direnvrc";
-        destination = "/direnvrc";
+        destination = "/direnv.toml";
         text = cfg.direnvrc;
       })
       (lib.optional cfg.nix-direnv.enable (pkgs.writeTextFile {
