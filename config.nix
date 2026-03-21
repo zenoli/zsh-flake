@@ -6,6 +6,11 @@
     direnv = {
       enable = lib.mkDefault true;
       settings = {
+        direnvrc = ''
+        [global]
+        log_format = "-"
+        log_filter = "^$"
+        '';
         nix-direnv.enable = true;
       };
     };

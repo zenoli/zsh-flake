@@ -23,8 +23,23 @@ in
     snippets = lib.mkOption {
       type = wlib.types.dagOf lib.types.str;
     };
+    extraPackages' = lib.mkOption {
+      type = lib.types.listOf lib.types.package;
+      default = [ ];
+      description = ''
+        Like extraPackages but packages are prefixed instead of suffixed.
+
+        Additional packages to add to the wrapper's runtime PATH.
+        This is useful if the wrapped program needs additional libraries or tools to function correctly.
+
+        Adds all its entries to the DAG under the name `NIX_PATH_ADDITIONS`
+      '';
+    };
   };
   config = {
+    zshAliases = {
+      p = "echo $PATH | tr ':' '\n'";
+    };
     zshrc.content = ''
       # Sources a file relative to the src directory
       function load {
@@ -39,5 +54,13 @@ in
 
       ${mergedSnippets}
       '';
+    prefixVar = lib.toList {
+      name = "NIX_PATH_ADDITIONS";
+      data = [
+        "PATH"
+          ":"
+          "${lib.makeBinPath config.extraPackages'}"
+      ];
+    };
   };
 }
