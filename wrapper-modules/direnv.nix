@@ -1,6 +1,7 @@
 { config, lib, wlib, pkgs, ... }:
 let
   cfg = config;
+
   direnvConfig = pkgs.symlinkJoin {
     name = "direnv-config";
     paths = [
@@ -22,6 +23,12 @@ in
 {
   imports = [ wlib.modules.default ];
   options = {
+    configDirname = lib.mkOption {
+      type = lib.types.str;
+      default = "${config.binName}-dot-dir";
+      description = "Name of the directory which is created as the dotdir in the wrapper output";
+    };
+
     direnvrc = lib.mkOption {
       type = lib.types.lines;
       description = ''
@@ -37,5 +44,11 @@ in
   config = {
     package = lib.mkDefault pkgs.direnv;
     env = { DIRENV_CONFIG = "${direnvConfig}"; };
+    # constructfFiles = {
+    #   direnvrc = {
+    #     content = config.direnvrc;
+    #     relPath = "${config.configDirname}/direnvrc";
+    #   };
+    # };
   };
 }
