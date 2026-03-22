@@ -39,6 +39,9 @@ in
   config = {
     zshAliases = {
       p = "echo $PATH | tr ':' '\n'";
+      nhs = "home-manager switch --flake \$NIXOS_CONFIG";
+      nos = "sudo nixos-rebuild switch --flake \$NIXOS_CONFIG";
+
     };
     zshrc.content = ''
       # Sources a file relative to the src directory
