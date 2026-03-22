@@ -42,10 +42,10 @@ in
     };
   };
   config = {
-    package = lib.mkDefault pkgs.direnv;
-    # package = pkgs.direnv.overrideAttrs (old: {
-    #   src = /home/olivier/repos/direnv;
-    # });
+    # package = lib.mkDefault pkgs.direnv;
+    package = pkgs.direnv.overrideAttrs (old: {
+      src = /home/olivier/repos/direnv;
+    });
     env = { 
       DIRENV_CONFIG = "${direnvConfig}"; 
       DIRENV_EXE_PATH = "${placeholder "out"}/bin/direnv";
