@@ -76,6 +76,9 @@ in
     };
     snippets.integrations = integrationConfig;
     extraPackages' = lib.mapAttrsToList (_: i : i.package) runtimeIntegrations;
-    # env.DIRENV_CONFIG = config.integrations.direnv.settings.env.DIRENV_CONFIG;
+    # We need to re-define this in the context of zsh, as otherwise 
+    # the direnv hook will not pick up the config wrapped inside 
+    # the direnv-wrapper.
+    env.DIRENV_CONFIG = config.integrations.direnv.settings.env.DIRENV_CONFIG;
   };
 }
