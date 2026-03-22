@@ -42,13 +42,22 @@ in
     };
   };
   config = {
-    # package = lib.mkDefault pkgs.direnv;
-    package = pkgs.direnv.overrideAttrs (old: {
-      src = /home/olivier/repos/direnv;
-    });
+    package = lib.mkDefault pkgs.direnv;
     env = { 
+      # **IMPORTANT** DIRENV_CONFIG needs to be explicitly set in your shells environment
+      # because right now, direnv will use the `direnv` binary directly in its shell 
+      # hook and not the wrapper (in which $DIRENV_CONFIG got injected). 
+      # Hence the wrapped config will not be picked up unless you explicitly reference 
+      # this variable and set it. 
+      # 
+      # If the PR below will ever be merged, this issue can be fixed by setting:
+      #
+      # env.DIRENV_EXE_PATH = "${placeholder "out"}/bin/direnv";
+      #
+      # This would make the direnv hook use the wrapper instead of the original binary.
+      # 
+      # https://github.com/direnv/direnv/pull/1564
       DIRENV_CONFIG = "${direnvConfig}"; 
-      DIRENV_EXE_PATH = "${placeholder "out"}/bin/direnv";
     };
     # constructfFiles = {
     #   direnvrc = {
