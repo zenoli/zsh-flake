@@ -72,8 +72,10 @@ in
       fzf.init = lib.mkDefault (exe: ''source <(${exe} --zsh)'');
       starship.init = lib.mkDefault (exe: ''eval "$(${exe} init zsh)"'');
       direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
+
     };
     snippets.integrations = integrationConfig;
     extraPackages' = lib.mapAttrsToList (_: i : i.package) runtimeIntegrations;
+    env.DIRENV_CONFIG = config.integrations.direnv.settings.env.DIRENV_CONFIG;
   };
 }
