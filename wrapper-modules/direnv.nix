@@ -43,7 +43,13 @@ in
   };
   config = {
     package = lib.mkDefault pkgs.direnv;
-    env = { DIRENV_CONFIG = "${direnvConfig}"; };
+    # package = pkgs.direnv.overrideAttrs (old: {
+    #   src = /home/olivier/repos/direnv;
+    # });
+    env = { 
+      DIRENV_CONFIG = "${direnvConfig}"; 
+      DIRENV_EXE_PATH = "${placeholder "out"}/bin/direnv";
+    };
     # constructfFiles = {
     #   direnvrc = {
     #     content = config.direnvrc;
