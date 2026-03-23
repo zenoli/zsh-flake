@@ -2,23 +2,6 @@
 let
   cfg = config;
 
-  direnvConfig = pkgs.symlinkJoin {
-    name = "direnv-config";
-    paths = [
-      (pkgs.writeTextFile {
-        name = "direnvrc";
-        destination = "/direnv.toml";
-        text = cfg.direnvrc;
-      })
-      (lib.optional cfg.nix-direnv.enable (pkgs.writeTextFile {
-        name = "direnvrc";
-        destination = "/lib/nix-direnv.sh";
-        text = ''
-          source ${cfg.nix-direnv.package}/share/nix-direnv/direnvrc
-        '';
-      }))
-    ];
-  };
   tomlFmt = pkgs.formats.toml { };
   direnvToml = tomlFmt.generate "direnv.toml" config.extraConfig;
 in
@@ -30,29 +13,7 @@ in
       default = "${config.binName}-dot-dir";
       description = "Name of the directory which is created as the dotdir in the wrapper output";
     };
-
     silent = lib.mkEnableOption "silent mode, that is, disabling direnv logging";
-    extraConfig = lib.mkOption {
-      inherit (tomlFmt) type;
-      default = { };
-      description = ''
-        Configuration of direnv.toml.
-        See <https://direnv.net/man/direnv.toml.1.html>
-      '';
-    };
-
-    direnvTomlContent = lib.mkOption {
-      type = lib.types.lines;
-      description = ''
-        Content of $DIRENV_CONFIG/direnv.toml
-      '';
-      default = ''
-        [global]
-        log_format = "-"
-        log_filter = "^$"
-      '';
-    };
-
     direnvrc = lib.mkOption {
       type = lib.types.lines;
       description = ''
@@ -63,6 +24,18 @@ in
     nix-direnv = {
       enable = lib.mkEnableOption "nix-direnv integration";
       package = lib.mkPackageOption pkgs "nix-direnv" { };
+    };
+    lib = lib.mkOption {
+      type = with lib; attrsOf lines;
+      default = {};
+    };
+    extraConfig = lib.mkOption {
+      inherit (tomlFmt) type;
+      default = { };
+      description = ''
+        Configuration of direnv.toml.
+        See <https://direnv.net/man/direnv.toml.1.html>
+      '';
     };
   };
   config = {
@@ -81,7 +54,7 @@ in
       # This would make the direnv hook use the wrapper instead of the original binary.
       # 
       # https://github.com/direnv/direnv/pull/1564
-      DIRENV_CONFIG = "${direnvConfig}"; 
+      DIRENV_CONFIG = "${placeholder "out"}/${config.configDirname}";
     };
     extraConfig = {
       global = lib.mkIf (config.silent) {
@@ -94,8 +67,12 @@ in
         content = builtins.readFile direnvToml;
         relPath = "${config.configDirname}/direnv.toml";
       };
+      direnvRc = {
+        content = config.direnvrc;
+        relPath = "${config.configDirname}/direnvrc";
+      };
       nixDirenv = lib.mkIf (config.nix-direnv.enable){
-        content = ''source ${cfg.nix-direnv.package}/share/nix-direnv/direnvrc'';
+        content = "source ${cfg.nix-direnv.package}/share/nix-direnv/direnvrc";
         relPath = "${config.configDirname}/lib/nix-direnv.sh";
       };
     };
