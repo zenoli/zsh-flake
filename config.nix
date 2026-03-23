@@ -7,11 +7,6 @@
       enable = lib.mkDefault true;
       settings = {
         silent = true;
-        # direnvrc = ''
-        # [global]
-        # log_format = "-"
-        # log_filter = "^$"
-        # '';
         nix-direnv.enable = true;
       };
     };
