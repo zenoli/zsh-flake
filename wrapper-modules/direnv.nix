@@ -19,6 +19,8 @@ let
       }))
     ];
   };
+  tomlFmt = pkgs.formats.toml { };
+  direnvToml = tomlFmt.generate "direnv.toml" config.extraConfig;
 in
 {
   imports = [ wlib.modules.default ];
@@ -29,10 +31,32 @@ in
       description = "Name of the directory which is created as the dotdir in the wrapper output";
     };
 
+    silent = lib.mkEnableOption "silent mode, that is, disabling direnv logging";
+    extraConfig = lib.mkOption {
+      inherit (tomlFmt) type;
+      default = { };
+      description = ''
+        Configuration of direnv.toml.
+        See <https://direnv.net/man/direnv.toml.1.html>
+      '';
+    };
+
+    direnvTomlContent = lib.mkOption {
+      type = lib.types.lines;
+      description = ''
+        Content of $DIRENV_CONFIG/direnv.toml
+      '';
+      default = ''
+        [global]
+        log_format = "-"
+        log_filter = "^$"
+      '';
+    };
+
     direnvrc = lib.mkOption {
       type = lib.types.lines;
       description = ''
-        Content of $DIRENV_CONFIG/direnvrc
+        Content of $DIRENV_CONFIG/direnv.toml
       '';
       default = "";
     };
@@ -59,11 +83,21 @@ in
       # https://github.com/direnv/direnv/pull/1564
       DIRENV_CONFIG = "${direnvConfig}"; 
     };
-    # constructfFiles = {
-    #   direnvrc = {
-    #     content = config.direnvrc;
-    #     relPath = "${config.configDirname}/direnvrc";
-    #   };
-    # };
+    extraConfig = {
+      global = lib.mkIf (config.silent) {
+        log_format = "-";
+        log_filter = "^$";
+      };
+    };
+    constructFiles = {
+      direnvToml = {
+        content = builtins.readFile direnvToml;
+        relPath = "${config.configDirname}/direnv.toml";
+      };
+      nixDirenv = lib.mkIf (config.nix-direnv.enable){
+        content = ''source ${cfg.nix-direnv.package}/share/nix-direnv/direnvrc'';
+        relPath = "${config.configDirname}/lib/nix-direnv.sh";
+      };
+    };
   };
 }
