@@ -26,7 +26,7 @@ in
       package = lib.mkPackageOption pkgs "nix-direnv" { };
     };
     lib = lib.mkOption {
-      type = with lib; attrsOf lines;
+      type = with lib.types; attrsOf lines;
       default = {};
     };
     extraConfig = lib.mkOption {
@@ -54,8 +54,16 @@ in
       # This would make the direnv hook use the wrapper instead of the original binary.
       # 
       # https://github.com/direnv/direnv/pull/1564
-      DIRENV_CONFIG = "${placeholder "out"}/${config.configDirname}";
+
+      # **IMPORTANT** Using `placeholder "out"` here seems to cause issues if this wrapper issue
+      # built inside a subWrapperModule (for example within the zshWrapper) as it refers
+      # to the build zsh output in that context. The passthru variants seems to solve this issue.
+      # DIRENV_CONFIG = "${placeholder "out"}/${config.configDirname}";
     };
+    passthru.DIRENV_CONFIG = "${config.wrapper.${config.outputName}}/${config.configDirname}";
+    lib."nix-direnv.sh" = lib.mkIf 
+      (config.nix-direnv.enable) 
+      "source ${cfg.nix-direnv.package}/share/nix-direnv/direnvrc";
     extraConfig = {
       global = lib.mkIf (config.silent) {
         log_format = "-";
@@ -71,10 +79,13 @@ in
         content = config.direnvrc;
         relPath = "${config.configDirname}/direnvrc";
       };
-      nixDirenv = lib.mkIf (config.nix-direnv.enable){
-        content = "source ${cfg.nix-direnv.package}/share/nix-direnv/direnvrc";
-        relPath = "${config.configDirname}/lib/nix-direnv.sh";
-      };
-    };
+    } // 
+    # TODO: As of now, construcFiles does not accept keys like 'nix-direnv.sh'.
+    # This hack somehow avoids the issue. Find out if this needs to be fixed in 
+    # `constructFiles`.
+    lib.mapAttrs' (name: value: lib.nameValuePair (builtins.replaceStrings ["." "-"] ["" ""] name) {
+      content = value;
+      relPath = "${config.configDirname}/lib/${name}";
+    }) config.lib;
   };
 }
