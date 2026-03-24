@@ -4,9 +4,10 @@ let
   mkScript = name: text: let
     script = pkgs.writeShellScriptBin name text;
   in script;
-  
+
   # Define your scripts/aliases
   scripts = [
+    (pkgs.callPackage ./scripts/ghd {})
     (pkgs.writeShellApplication {
       name = "dev";
       runtimeInputs = with pkgs; [ watchexec ];
