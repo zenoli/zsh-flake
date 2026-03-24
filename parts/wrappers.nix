@@ -5,15 +5,10 @@
       nix-direnv.enable = true;
       silent = true;
     };
-    zsh = { pkgs, wlib, lib, ... }: 
-    let
-      zshWrapperModule = import (self + /wrapper-modules/zsh);
-      zshWrapperConfig = import (self + /config.nix);
-    in 
-    {
+    zsh = { pkgs, wlib, lib, ... }: {
       imports = [ 
-        zshWrapperModule
-        zshWrapperConfig
+        (self + /wrapper)
+        (self + /config.nix)
       ];
     };
   };
