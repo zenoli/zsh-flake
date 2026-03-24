@@ -31,6 +31,11 @@
       disable = false;
     } 
   ];
+  zshAliases = {
+    p = "echo $PATH | tr ':' '\n'";
+    nhs = "home-manager switch --flake \$NIXOS_CONFIG";
+    nos = "sudo nixos-rebuild switch --flake \$NIXOS_CONFIG";
+  };
   zshSrc.directory = lib.mkDefault ./src;
 }
 
