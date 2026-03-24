@@ -61,7 +61,7 @@ in
       type = lib.types.submodule ({ config, ...}: {
         freeformType = lib.types.attrsOf integration;
         options = {
-          direnv = mkWrapperIntegrationOption ../../direnv.nix;
+          direnv = mkWrapperIntegrationOption wlib.wrapperModules.direnv;
         };
       });
     };

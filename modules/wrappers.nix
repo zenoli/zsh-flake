@@ -1,7 +1,7 @@
 { self, withSystem, ... }: {
   flake.wrappers = {
     direnv = { pkgs, wlib, ... }: {
-      imports = [ (import (self + /wrapper-modules/direnv.nix)) ];
+      imports = [ wlib.wrapperModules.direnv ];
       nix-direnv.enable = true;
       silent = true;
     };
