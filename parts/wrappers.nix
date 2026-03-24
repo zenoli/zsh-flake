@@ -8,7 +8,7 @@
     zsh = { pkgs, wlib, lib, ... }: {
       imports = [ 
         (self + /wrapper)
-        (self + /config.nix)
+        (self + /config)
       ];
     };
   };

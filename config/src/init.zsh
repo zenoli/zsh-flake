@@ -15,3 +15,4 @@ mkdir -p "$zsh_state_dir"
 export HISTFILE="$zsh_state_dir/zsh_history"
 
 load options.zsh
+

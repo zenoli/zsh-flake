@@ -23,6 +23,17 @@ in
     snippets = lib.mkOption {
       type = wlib.types.dagOf lib.types.str;
     };
+    zshSrc = {
+      directory = lib.mkOption {
+        type = with lib.types; nullOr path;
+        default = null;
+      };
+      initFile = lib.mkOption {
+        type = lib.types.str;
+        default = "init.zsh";
+      };
+    };
+
     extraPackages' = lib.mkOption {
       type = lib.types.listOf lib.types.package;
       default = [ ];
@@ -43,10 +54,10 @@ in
       nos = "sudo nixos-rebuild switch --flake \$NIXOS_CONFIG";
 
     };
-    zshrc.content = ''
+    zshrc.content = mergedSnippets + "\n\n" +  (lib.optionalString (config.zshSrc.directory != null) ''
       # Sources a file relative to the src directory
       function load {
-        source "${./src}/$1"
+        source "${config.zshSrc.directory}/$1"
       }
 
       # Cleans up the environment
@@ -54,9 +65,10 @@ in
         unfunction load
         # unset ZDOTDIR
       }
+      load ${config.zshSrc.initFile}
 
-      ${mergedSnippets}
-      '';
+      cleanup
+    '');
     prefixVar = lib.toList {
       name = "NIX_PATH_ADDITIONS";
       data = [
