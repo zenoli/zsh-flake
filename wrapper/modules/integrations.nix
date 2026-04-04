@@ -36,8 +36,6 @@ let
     type = wrapperIntegrationWith wrapperModule;
   };
 
-
-
   enabledIntegrations = lib.filterAttrs (_: i: i.enable) config.integrations;
   runtimeIntegrations = lib.filterAttrs (_: i: i.install) enabledIntegrations;
   initializableIntegrations = lib.filterAttrs (_: i: i.init != null) enabledIntegrations;
@@ -53,6 +51,7 @@ let
       ## ${name} integration
       ${getInitCommand integration}
     '') initializableIntegrations;
+  direnvConfig = config.integrations.direnv;
 in
 {
   options = {
@@ -79,6 +78,6 @@ in
     # We need to re-define this in the context of zsh, as otherwise 
     # the direnv hook will not pick up the config wrapped inside 
     # the direnv-wrapper.
-    env.DIRENV_CONFIG = config.integrations.direnv.settings.passthru.DIRENV_CONFIG;
+    env.DIRENV_CONFIG = lib.mkIf direnvConfig.enable direnvConfig.settings.passthru.DIRENV_CONFIG;
   };
 }

@@ -7,7 +7,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     wrappers = {
-      url = "github:zenoli/nix-wrapper-modules/direnv-wrapper-module";
+      url = "github:zenoli/nix-wrapper-modules/direnv-wrapper-module-with-install";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-parts = {
