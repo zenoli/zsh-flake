@@ -83,7 +83,7 @@ in
       in
       {
         config = lib.mkMerge [
-          (top.config.install.addWrapperModule "${./module.nix} zsh as userShell" {
+          (top.config.install.addWrapperModule "${./default.nix} zsh as userShell" {
             _file = ./module.nix;
             options.userShell = lib.mkOption {
               type = lib.types.nullOr lib.types.str;
