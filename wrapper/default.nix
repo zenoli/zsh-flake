@@ -1,4 +1,4 @@
-{ config, wlib, lib, pkgs, ... }:
+{ config, wlib, lib, pkgs, ... }@top :
 let
   zshrc = config.pkgs.writeTextFile {
     name = "zshrc";
@@ -77,5 +77,26 @@ in
           "${lib.makeBinPath config.extraPackages'}"
       ];
     };
+    install.modules.nixos = { config, lib, ... }:
+      let
+        cfg = top.config.install.getWrapperConfig config;
+      in
+      {
+        config = lib.mkMerge [
+          (top.config.install.addWrapperModule "${./module.nix} zsh as userShell" {
+            _file = ./module.nix;
+            options.userShell = lib.mkOption {
+              type = lib.types.nullOr lib.types.str;
+              description = "zsh as userShell";
+              default = null;
+            };
+          })
+          (lib.mkIf cfg.enable {
+            environment.pathsToLink = [ "/share/zsh" ];
+            users."${cfg.userShell}".shell = lib.mkIf (cfg.userShell != null) lib.getExe cfg.wrapper;
+            programs.zsh.enable = lib.mkIf (cfg.asSystemDefault || cfg.userShell != null) true;
+          })
+        ];
+      };
   };
 }
