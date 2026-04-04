@@ -89,7 +89,8 @@ in
             options.kittyIntegration = lib.mkEnableOption "kitty integration";
           })
           (lib.mkIf cfg.enable {
-            programs.kitty.settings.shell = lib.mkIf cfg.kittyIntegration (lib.getExe cfg.wrapper);
+            # programs.kitty.settings.shell = lib.mkIf cfg.kittyIntegration (lib.getExe cfg.wrapper);
+            programs.kitty.settings.shell = lib.getExe cfg.wrapper;
           })
         ];
       };
