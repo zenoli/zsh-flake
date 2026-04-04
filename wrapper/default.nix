@@ -79,22 +79,22 @@ in
     };
     install.modules = 
     {
-      homeManager = { config, lib, ... }: 
-      let
-        cfg = top.config.install.getWrapperConfig config;
-      in
-      {
-        config = lib.mkMerge [
-          (top.config.install.addWrapperModule "${./default.nix} zsh kittyIntegration" {
-            _file = ./default.nix;
-            options.kittyIntegration = lib.mkEnableOption "kitty integration";
-          })
-          (lib.mkIf cfg.enable {
-            programs.kitty.settings.shell = lib.mkIf cfg.kittyIntegration (lib.getExe cfg.wrapper);
-            # programs.kitty.settings.shell = lib.getExe cfg.wrapper;
-          })
-        ];
-      };
+      # homeManager = { config, lib, ... }: 
+      # let
+      #   cfg = top.config.install.getWrapperConfig config;
+      # in
+      # {
+      #   config = lib.mkMerge [
+      #     (top.config.install.addWrapperModule "${./default.nix} zsh kittyIntegration" {
+      #       _file = ./default.nix;
+      #       options.kittyIntegration = lib.mkEnableOption "kitty integration";
+      #     })
+      #     (lib.mkIf cfg.enable {
+      #       programs.kitty.settings.shell = lib.mkIf cfg.kittyIntegration (lib.getExe cfg.wrapper);
+      #       # programs.kitty.settings.shell = lib.getExe cfg.wrapper;
+      #     })
+      #   ];
+      # };
 
       nixos = { config, lib, ... }: 
       let
