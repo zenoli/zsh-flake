@@ -77,11 +77,24 @@ in
           "${lib.makeBinPath config.extraPackages'}"
       ];
     };
-    install.modules.nixos = { config, lib, ... }:
-      let
-        cfg = top.config.install.getWrapperConfig config;
-      in
-      {
+    install.modules = 
+    let
+      cfg = top.config.install.getWrapperConfig config;
+    in
+    {
+      homeManager = { config, lib, ... }: {
+        config = lib.mkMerge [
+          (top.config.install.addWrapperModule "${./default.nix} zsh kittyIntegration" {
+            _file = ./module.nix;
+            options.kittyIntegration = lib.mkEnableOption "kitty integration";
+          })
+          (lib.mkIf cfg.enable {
+            programs.kitty.settings.shell = lib.mkIf cfg.kittyIntegration (lib.getExe cfg.wrapper);
+          })
+        ];
+      };
+
+      nixos = { config, lib, ... }: {
         config = lib.mkMerge [
           (top.config.install.addWrapperModule "${./default.nix} zsh as userShell" {
             _file = ./module.nix;
@@ -92,8 +105,6 @@ in
             };
           })
           (lib.mkIf cfg.enable {
-            environment.pathsToLink = [ "/share/zsh" ];
-            # users.users."${cfg.userShell}".shell = lib.mkIf (cfg.userShell != null) (lib.getExe cfg.wrapper);
             users.users = lib.mkIf (cfg.userShell != null) {
               "${cfg.userShell}".shell = lib.getExe cfg.wrapper;
             };
@@ -101,5 +112,6 @@ in
           })
         ];
       };
+    };
   };
 }
