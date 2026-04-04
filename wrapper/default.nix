@@ -78,27 +78,32 @@ in
       ];
     };
     install.modules = 
-    let
-      cfg = top.config.install.getWrapperConfig config;
-    in
     {
-      homeManager = { config, lib, ... }: {
+      homeManager = { config, lib, ... }: 
+      let
+        cfg = top.config.install.getWrapperConfig config;
+      in
+      {
         config = lib.mkMerge [
           (top.config.install.addWrapperModule "${./default.nix} zsh kittyIntegration" {
-            _file = ./module.nix;
+            _file = ./default.nix;
             options.kittyIntegration = lib.mkEnableOption "kitty integration";
           })
           (lib.mkIf cfg.enable {
-            # programs.kitty.settings.shell = lib.mkIf cfg.kittyIntegration (lib.getExe cfg.wrapper);
-            programs.kitty.settings.shell = lib.getExe cfg.wrapper;
+            programs.kitty.settings.shell = lib.mkIf cfg.kittyIntegration (lib.getExe cfg.wrapper);
+            # programs.kitty.settings.shell = lib.getExe cfg.wrapper;
           })
         ];
       };
 
-      nixos = { config, lib, ... }: {
+      nixos = { config, lib, ... }: 
+      let
+        cfg = top.config.install.getWrapperConfig config;
+      in
+      {
         config = lib.mkMerge [
           (top.config.install.addWrapperModule "${./default.nix} zsh as userShell" {
-            _file = ./module.nix;
+            _file = ./default.nix;
             options.userShell = lib.mkOption {
               type = lib.types.nullOr lib.types.str;
               description = "zsh as userShell";
