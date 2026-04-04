@@ -95,7 +95,7 @@ in
             environment.pathsToLink = [ "/share/zsh" ];
             # users.users."${cfg.userShell}".shell = lib.mkIf (cfg.userShell != null) (lib.getExe cfg.wrapper);
             users.users = lib.mkIf (cfg.userShell != null) {
-              "${cfg.userShell}" = lib.getExe cfg.wrapper;
+              "${cfg.userShell}".shell = lib.getExe cfg.wrapper;
             };
             programs.zsh.enable = lib.mkIf (cfg.asSystemDefault || cfg.userShell != null) true;
           })
