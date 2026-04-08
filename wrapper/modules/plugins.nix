@@ -1,7 +1,7 @@
 { config, wlib, lib, pkgs, ... }:
 let
   types = (import ../types) { inherit pkgs lib; };
-  enabledPlugins = lib.filter (p: !p.disable) config.plugins;
+  enabledPlugins = lib.filter (p: p.enable) config.plugins;
   pluginConfig = lib.concatMapStringsSep "\n" (
     plugin:
     builtins.concatStringsSep "\n" (

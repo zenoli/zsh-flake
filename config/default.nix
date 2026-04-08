@@ -20,12 +20,10 @@
       init = lib.optionalString 
         config.integrations.fzf.enable 
         "zvm_after_init_commands+=('source <(fzf --zsh)')";
-      disable = false;
     } 
     { 
       package = pkgs.oh-my-zsh;
       file = "plugins/git/git.plugin.zsh";
-      disable = false;
     } 
     { 
       package = pkgs.zsh-fzf-tab; 

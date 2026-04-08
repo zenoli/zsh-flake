@@ -26,10 +26,10 @@ lib.types.submodule ({ config, ... }: {
       type = lib.types.nullOr lib.types.str;
       default = null;
     };
-    disable = lib.mkOption {
-      default = false;
-      example = true;
-      description = "Whether to disable plugin ${config.name}.";
+    enable = lib.mkOption {
+      default = true;
+      example = false;
+      description = "Enable plugin ${config.name}.";
       type = lib.types.bool;
     };
   };
