@@ -1,4 +1,5 @@
 { pkgs, config, wlib, lib, ... }: {
+  imports = [ ./plugins.nix ];
   integrations = {
     starship = {
       enable = lib.mkDefault true;
@@ -14,22 +15,6 @@
       enable = lib.mkDefault true;
     };
   };
-  plugins = [ 
-    { 
-      package = pkgs.zsh-vi-mode;
-      init = lib.optionalString 
-        config.integrations.fzf.enable 
-        "zvm_after_init_commands+=('source <(fzf --zsh)')";
-    } 
-    { 
-      package = pkgs.oh-my-zsh;
-      file = "plugins/git/git.plugin.zsh";
-    } 
-    { 
-      package = pkgs.zsh-fzf-tab; 
-      name = "fzf-tab";
-    }
-  ];
   zshSrc.directory = lib.mkDefault ./src;
 }
 
