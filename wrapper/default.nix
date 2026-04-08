@@ -65,7 +65,11 @@ in
         unfunction load
         # unset ZDOTDIR
       }
-      load ${config.zshSrc.initFile}
+      function init {
+        load ${config.zshSrc.initFile}
+      }
+      
+      init
 
       cleanup
     '');

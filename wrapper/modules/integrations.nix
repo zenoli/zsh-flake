@@ -73,7 +73,7 @@ in
       direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
 
     };
-    snippets.integrations = integrationConfig;
+    snippets.integrations = wlib.dag.entryAfter ["plugins"] integrationConfig;
     extraPackages' = lib.mapAttrsToList (_: i : i.package) runtimeIntegrations;
     # We need to re-define this in the context of zsh, as otherwise 
     # the direnv hook will not pick up the config wrapped inside 
