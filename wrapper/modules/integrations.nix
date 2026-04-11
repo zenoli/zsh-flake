@@ -68,12 +68,21 @@ in
   config = {
     integrations =  {
       # Preset init commands
-      fzf.init = lib.mkDefault (exe: ''source <(${exe} --zsh)'');
+      fzf.init = lib.mkDefault (exe:
+        let 
+          initCmd = ''source <(${exe} --zsh)''; 
+        in
+          if (config.utils.hasPlugin "zsh-vi-mode") then
+            ''zvm_after_init_commands+=('${initCmd}')''
+          else
+            initCmd
+      );
+      # fzf.init = builtins.trace zshViModeInstalled (lib.mkDefault (exe: ''source <(${exe} --zsh)''));
       starship.init = lib.mkDefault (exe: ''eval "$(${exe} init zsh)"'');
       direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
 
     };
-    snippets.integrations = wlib.dag.entryAfter ["plugins"] integrationConfig;
+    snippets.integrations = integrationConfig;
     extraPackages' = lib.mapAttrsToList (_: i : i.package) runtimeIntegrations;
     # We need to re-define this in the context of zsh, as otherwise 
     # the direnv hook will not pick up the config wrapped inside 

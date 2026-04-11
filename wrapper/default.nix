@@ -13,6 +13,10 @@ let
     '') 
     (wlib.dag.sortAndUnwrap { dag = config.snippets; });
   types = (import ./types) { inherit pkgs lib; };
+  after = name: { 
+    after = [ name ];
+    data = wlib.ignoreSpecField;
+  };
 in
 {
   imports = [ 
@@ -53,6 +57,10 @@ in
       nhs = "home-manager switch --flake \$NIXOS_CONFIG";
       nos = "sudo nixos-rebuild switch --flake \$NIXOS_CONFIG";
 
+    };
+    snippets = {
+      plugins = after "completion";
+      integrations = after "plugins";
     };
     zshrc.content = mergedSnippets + "\n\n" +  (lib.optionalString (config.zshSrc.directory != null) ''
       # Sources a file relative to the src directory

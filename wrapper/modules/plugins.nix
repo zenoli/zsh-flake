@@ -23,8 +23,17 @@ in
       type = lib.types.listOf types.plugin;
       description = "List of zsh plugins.";
     };
+    utils.hasPlugin = lib.mkOption {
+      type = lib.types.functionTo lib.types.bool;
+      internal = true;
+      readOnly = true;
+      default = name: lib.elem name (lib.pipe config.plugins [
+        (lib.filter (p: p.enable))
+        (lib.map (p: lib.getName p.package))
+      ]);
+    };
   };
-  config.snippets.plugins = wlib.dag.entryAfter [ "completion" ] pluginConfig;
+  config.snippets.plugins =  pluginConfig;
   # This somehow causes the plugin sources (pluginPackage.src) to be fetched.
   # Without it the sources are not downloaded to the nix store and the plugins 
   # cannot be sourced.
