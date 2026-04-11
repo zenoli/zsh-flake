@@ -9,18 +9,32 @@ let
   scripts = [
     (pkgs.callPackage ./scripts/ghd {})
     (pkgs.writeShellApplication {
+      name = "debug-zshrc";
+      runtimeInputs = with pkgs; [ neovim ];
+      text = ''
+        nix build && nvim result/zsh-dot-dir/.zshrc
+      '';
+    })
+    (pkgs.writeShellApplication {
+      name = "debug-zshenv";
+      runtimeInputs = with pkgs; [ neovim ];
+      text = ''
+        nix build && nvim result/zsh-dot-dir/.zshenv
+      '';
+    })
+    (pkgs.writeShellApplication {
       name = "dev";
       runtimeInputs = with pkgs; [ watchexec ];
       text = ''
-      watchexec \
-        --restart \
-        --clear \
-        --stop-signal=SIGHUP \
-        --stop-timeout=1s \
-        --wrap-process=none \
-        nix run
+        watchexec \
+          --restart \
+          --clear \
+          --stop-signal=SIGHUP \
+          --stop-timeout=1s \
+          --wrap-process=none \
+          nix run
       '';
-     })
+    })
   ];
 in 
 pkgs.mkShell {

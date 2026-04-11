@@ -2,9 +2,9 @@
   plugins = [ 
     { 
       package = pkgs.zsh-vi-mode;
-      init = lib.optionalString 
-        config.integrations.fzf.enable 
-        "zvm_after_init_commands+=('source <(fzf --zsh)')";
+      init =  ''
+        # ZVM_INIT_MODE=sourcing
+      '';
     } 
     { 
       package = pkgs.oh-my-zsh;
@@ -20,6 +20,9 @@
       init = ''
         alias gc='git checkout $(_fzf_git_branches)'
       '';
+    }
+    {
+      package = pkgs.zsh-syntax-highlighting;
     }
   ];
 }
