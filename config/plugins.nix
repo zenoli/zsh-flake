@@ -1,15 +1,22 @@
 { config, pkgs, lib, ... }: {
   plugins = [ 
-    { 
-      package = pkgs.zsh-vi-mode;
-      init =  ''
-        # ZVM_INIT_MODE=sourcing
-      '';
-    } 
-    { 
-      package = pkgs.oh-my-zsh;
-      file = "plugins/git/git.plugin.zsh";
-    } 
+    {
+      name = "zsh-vi-mode";
+      before = [ "omz-git" ];
+      data = { 
+        package = pkgs.zsh-vi-mode;
+        init =  ''
+          # ZVM_INIT_MODE=sourcing
+        '';
+      };
+    }
+    {
+      name = "omz-git";
+      data = { 
+        package = pkgs.oh-my-zsh;
+        file = "plugins/git/git.plugin.zsh";
+      };
+    }
     { 
       package = pkgs.zsh-fzf-tab; 
       name = "fzf-tab";
