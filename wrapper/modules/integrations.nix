@@ -79,7 +79,7 @@ in
       );
       # fzf.init = builtins.trace zshViModeInstalled (lib.mkDefault (exe: ''source <(${exe} --zsh)''));
       starship.init = lib.mkDefault (exe: ''eval "$(${exe} init zsh)"'');
-      direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
+      # direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
 
     };
     snippets.integrations = integrationConfig;

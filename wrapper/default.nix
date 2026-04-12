@@ -59,13 +59,13 @@ in
 
     };
     snippets = {
-      p10kSilentPrompt = {
-        data = ''
-          if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-            source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-          fi
-        '';
-      };
+      p10kSilentPrompt = ''
+        (( ''${+commands[direnv]} )) && emulate zsh -c "$(direnv export zsh)"
+        if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+          source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+        fi
+        (( ''${+commands[direnv]} )) && emulate zsh -c "$(direnv hook zsh)"
+      '';
       completion = after "p10kSilentPrompt";
       plugins = after "completion";
       integrations = after "plugins";
