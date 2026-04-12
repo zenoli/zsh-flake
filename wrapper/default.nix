@@ -59,6 +59,14 @@ in
 
     };
     snippets = {
+      p10kSilentPrompt = {
+        data = ''
+          if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+            source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+          fi
+        '';
+      };
+      completion = after "p10kSilentPrompt";
       plugins = after "completion";
       integrations = after "plugins";
     };

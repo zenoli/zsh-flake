@@ -1,5 +1,12 @@
 { config, pkgs, lib, ... }: {
   plugins = [ 
+    {
+      package = pkgs.zsh-powerlevel10k;
+      file = "powerlevel10k.zsh-theme";
+      init = ''
+      [[ ! -f ${../demo-zdotdir/.p10k.zsh} ]] || source ${../demo-zdotdir/.p10k.zsh}
+      '';
+    }
     { 
       package = pkgs.zsh-vi-mode;
       init =  ''

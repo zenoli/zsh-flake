@@ -2,7 +2,7 @@
   imports = [ ./plugins.nix ];
   integrations = {
     starship = {
-      enable = lib.mkDefault true;
+      enable = lib.mkDefault false;
     };
     direnv = {
       enable = lib.mkDefault true;
