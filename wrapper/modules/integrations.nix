@@ -89,7 +89,8 @@ in
       # fzf.init = builtins.trace zshViModeInstalled (lib.mkDefault (exe: ''source <(${exe} --zsh)''));
       starship.init = lib.mkDefault (exe: ''eval "$(${exe} init zsh)"'');
       # TODO: Only set init if powerlevel10k is enabled and direnv is enabled
-      # direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
+      direnv.init = lib.mkIf (!config.prompts.powerlevel10k.enable)
+        (lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"''));
 
     };
     snippets.integrations = integrationConfig;

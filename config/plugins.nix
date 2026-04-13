@@ -1,5 +1,4 @@
 { config, pkgs, lib, ... }: {
-  prompts.powerlevel10k.enable = true;
   plugins = [ 
     { 
       package = pkgs.zsh-vi-mode;

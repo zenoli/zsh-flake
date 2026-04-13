@@ -50,30 +50,8 @@ in
         Adds all its entries to the DAG under the name `NIX_PATH_ADDITIONS`
       '';
     };
-    prompts = {
-      powerlevel10k = {
-        enable = lib.mkEnableOption "powerlevel10k prompt";
-        package = lib.mkPackageOption pkgs "zsh-powerlevel10k" {};
-        config = lib.mkOption {
-          type = lib.types.path;
-          default = config.prompts.powerlevel10k.package.src + /config/p10k-lean.zsh;
-        };
-      };
-    };
   };
   config = {
-    plugins = lib.mkIf config.prompts.powerlevel10k.enable [
-      {
-        package = config.prompts.powerlevel10k.package;
-        file = "powerlevel10k.zsh-theme";
-        init = ''
-        [[ ! -f ${config.prompts.powerlevel10k.config} ]] || source ${config.prompts.powerlevel10k.config}
-        '';
-        # init = ''
-        # [[ ! -f ${../config/src/.p10k.zsh} ]] || source ${../config/src/.p10k.zsh}
-        # '';
-      }
-    ];
     zshAliases = {
       p = "echo $PATH | tr ':' '\n'";
       nhs = "home-manager switch --flake \$NIXOS_CONFIG";
@@ -81,25 +59,6 @@ in
 
     };
     snippets = {
-      p10kInstantPrompt = let
-        instantPrompt = ''
-          if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-            source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-          fi
-        '';
-      in 
-        if config.utils.hasIntegration "direnv" then
-          let 
-            direnvExe = lib.getExe config.integrations.direnv.package;
-          in
-          # See: https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#how-do-i-initialize-direnv-when-using-instant-prompt
-          ''
-            emulate zsh -c "$(${direnvExe} export zsh)"
-            ${instantPrompt}
-            emulate zsh -c "$(${direnvExe} hook zsh)"
-          ''
-        else
-          instantPrompt;
       completion = after "p10kInstantPrompt";
       plugins = after "completion";
       integrations = after "plugins";
