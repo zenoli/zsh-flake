@@ -19,8 +19,10 @@ in
             if cfg.preset != null
             then cfg.package.src + "/config/p10k-${cfg.preset}.zsh"
             else throw ''
-              Either set `preset` to a non-null value or explicitly set `p10k.zsh` to a valid path.
-              You can use the configuration wizard by running:
+              Either set `preset` to a non-null value or explicitly set `p10k.zsh` 
+              to a path pointing to a valid `.p10k.zsh` file.
+              You can use the configuration wizard to generate an initial `.p10k.zsh` 
+              file by running:
 
               `nix run github:zenoli/zsh-flake#p10k-configure`
             '';
