@@ -1,6 +1,6 @@
 { pkgs, config, wlib, lib, ... }: {
   imports = [ ./plugins.nix ];
-  prompts.powerlevel10k.enable = false;
+  prompts.powerlevel10k.enable = true;
   integrations = {
     starship = {
       enable = lib.mkDefault false;
