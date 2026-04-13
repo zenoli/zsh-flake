@@ -59,14 +59,26 @@ in
 
     };
     snippets = {
-      p10kSilentPrompt = ''
-        (( ''${+commands[direnv]} )) && emulate zsh -c "$(direnv export zsh)"
-        if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-          source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-        fi
-        (( ''${+commands[direnv]} )) && emulate zsh -c "$(direnv hook zsh)"
-      '';
-      completion = after "p10kSilentPrompt";
+      p10kInstantPrompt = let
+        instantPrompt = ''
+          if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+            source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+          fi
+        '';
+      in 
+        if config.utils.hasIntegration "direnv" then
+          let 
+            direnvExe = lib.getExe config.integrations.direnv.package;
+          in
+          # See: https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#how-do-i-initialize-direnv-when-using-instant-prompt
+          ''
+            emulate zsh -c "$(${direnvExe} export zsh)"
+            ${instantPrompt}
+            emulate zsh -c "$(${direnvExe} hook zsh)"
+          ''
+        else
+          instantPrompt;
+      completion = after "p10kInstantPrompt";
       plugins = after "completion";
       integrations = after "plugins";
     };

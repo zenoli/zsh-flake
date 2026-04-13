@@ -64,6 +64,15 @@ in
         };
       });
     };
+    utils.hasIntegration = lib.mkOption {
+      type = lib.types.functionTo lib.types.bool;
+      internal = true;
+      readOnly = true;
+      default = name: lib.elem name (lib.pipe enabledIntegrations [
+        lib.attrValues
+        (lib.map (p: lib.getName p.package))
+      ]);
+    };
   };
   config = {
     integrations =  {
@@ -79,6 +88,7 @@ in
       );
       # fzf.init = builtins.trace zshViModeInstalled (lib.mkDefault (exe: ''source <(${exe} --zsh)''));
       starship.init = lib.mkDefault (exe: ''eval "$(${exe} init zsh)"'');
+      # TODO: Only set init if powerlevel10k is enabled and direnv is enabled
       # direnv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
 
     };
