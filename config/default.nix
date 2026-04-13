@@ -2,7 +2,7 @@
   imports = [ ./plugins.nix ];
   prompts.powerlevel10k = {
     enable = true;
-    # preset = "lean";
+    preset = "lean";
   };
   integrations = {
     starship = {
