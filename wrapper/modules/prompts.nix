@@ -1,7 +1,7 @@
-{ config, wlib, lib, pkgs, ... }: 
+{ config, wlib, lib, pkgs, ... }:
 let
   cfg = config.prompts.powerlevel10k;
-
+  presets = [ "classic" "lean" "lean-8colors" "pure" "rainbow" "robbyrussell" ];
 in
 {
   options = {
@@ -9,9 +9,16 @@ in
       powerlevel10k = {
         enable = lib.mkEnableOption "powerlevel10k prompt";
         package = lib.mkPackageOption pkgs "zsh-powerlevel10k" {};
+        preset = lib.mkOption {
+          type = lib.types.nullOr (lib.types.enum presets);
+          default = null;
+        };
         "p10k.zsh" = lib.mkOption {
           type = lib.types.path;
-          default = cfg.package.src + /config/p10k-lean.zsh;
+          default =
+            if cfg.preset != null
+            then cfg.package.src + "/config/p10k-${cfg.preset}.zsh"
+            else throw "Either set `preset` to a non-null value or explicitly set `p10k.zsh` to a valid path";
         };
       };
     };
