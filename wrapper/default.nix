@@ -37,7 +37,6 @@ in
         default = "init.zsh";
       };
     };
-
     extraPackages' = lib.mkOption {
       type = lib.types.listOf lib.types.package;
       default = [ ];

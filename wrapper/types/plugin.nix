@@ -1,9 +1,8 @@
 { lib, ... }: 
-lib.types.submodule ({ config, ... }: {
+({ config, ... }: {
   options = {
     package = lib.mkOption {
-      type = lib.types.nullOr lib.types.package;
-      default = null;
+      type = lib.types.package;
     };
     src = lib.mkOption {
       type = lib.types.path;
@@ -14,9 +13,7 @@ lib.types.submodule ({ config, ... }: {
     };
     name = lib.mkOption {
       type = lib.types.str;
-      default = if config.package != null 
-      then config.package.pname
-      else throw "Plugin option 'name' must be provided if 'package' is null.";
+      default = config.package.pname;
     };
     file = lib.mkOption {
       type = lib.types.str;

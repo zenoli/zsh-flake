@@ -14,13 +14,14 @@ let
       ++ (lib.optional (plugin.init != null) plugin.init
       )
     )
-  ) enabledPlugins;
+  ) (wlib.dag.sortAndUnwrap { dag = config.plugins; });
 in
 {
   options = {
     plugins = lib.mkOption {
       default = [ ];
-      type = lib.types.listOf types.plugin;
+      type = lib.types.listOf (wlib.types.spec [ types.plugin config.interfaces.sortable ]);
+      # type = lib.types.listOf types.plugin;
       description = "List of zsh plugins.";
     };
     utils.hasPlugin = lib.mkOption {
@@ -33,7 +34,7 @@ in
       ]);
     };
   };
-  config.snippets.plugins =  pluginConfig;
+  config.snippets.plugins = pluginConfig;
   # This somehow causes the plugin sources (pluginPackage.src) to be fetched.
   # Without it the sources are not downloaded to the nix store and the plugins 
   # cannot be sourced.
