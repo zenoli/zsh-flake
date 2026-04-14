@@ -1,33 +1,9 @@
-{ config, wlib, lib, pkgs, ... }:
+{ config, wlib, lib, pkgs, ... }@top:
 let
-  # Interface
-  integratable = ({ config, name, ... }: {
-    options = {
-      enable = lib.mkEnableOption "${name} integration";
-      package = lib.mkPackageOption pkgs name {};
-      install = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = ''
-          Whether to install ${name} into $PATH.
-        '';
-      };
-      init = lib.mkOption {
-        type = lib.types.nullOr (lib.types.either 
-          lib.types.str 
-          (lib.types.functionTo lib.types.str) # exe: string
-        );
-        description = ''
-          Initialization command for ${name}.
-          Can be either a string or as a function `exe -> str` where
-          `exe` is the executable extracted from package.
-        '';
-        default = null;
-      };
-    };
-  });
+  enabledIntegrations = lib.filter (i: i.enable) (wlib.dag.sortAndUnwrap { dag = config.integrations; });
+  runtimeIntegrations = lib.filter (i: i.install) enabledIntegrations;
+  initializableIntegrations = lib.filter (i: i.init != null) enabledIntegrations;
 
-  # integration = lib.types.submodule integratable;
   wrapperIntegrationWith = wrapperModule: lib.types.submoduleWith {
     modules = [
       ({config, ... }: {
@@ -44,10 +20,6 @@ let
   mkWrapperIntegrationOption = wrapperModule: lib.mkOption {
     type = wrapperIntegrationWith wrapperModule;
   };
-
-  enabledIntegrations = lib.filter (i: i.enable) (wlib.dag.sortAndUnwrap { dag = config.integrations; });
-  runtimeIntegrations = lib.filter (i: i.install) enabledIntegrations;
-  initializableIntegrations = lib.filter (i: i.init != null) enabledIntegrations;
 
   getInitCommand = integration: 
     if lib.isFunction integration.init then 
@@ -67,7 +39,7 @@ in
     integrations = lib.mkOption {
       default = {};
       type = lib.types.submodule ({ config, ...}: {
-        freeformType = with lib.types; attrsOf (submodule integratable);
+        freeformType = with lib.types; attrsOf (submodule top.config.interfaces.integratable);
         options = {
           direnv = mkWrapperIntegrationOption wlib.wrapperModules.direnv;
         };
