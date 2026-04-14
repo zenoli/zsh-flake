@@ -26,18 +26,6 @@ let
       };
     };
   });
-  # sortable = {
-  #   options = {
-  #     before = lib.mkOption {
-  #       type = lib.types.listOf lib.types.str;
-  #       default = [];
-  #     };
-  #     after = lib.mkOption {
-  #       type = lib.types.listOf lib.types.str;
-  #       default = [];
-  #     };
-  #   };
-  # };
 
   # integration = lib.types.submodule integratable;
   wrapperIntegrationWith = wrapperModule: lib.types.submoduleWith {
