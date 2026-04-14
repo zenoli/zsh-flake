@@ -20,7 +20,7 @@ in
   options = {
     plugins = lib.mkOption {
       default = [ ];
-      type = lib.types.listOf (wlib.types.spec types.plugin);
+      type = lib.types.listOf (wlib.types.spec [ types.plugin config.interfaces.sortable ]);
       # type = lib.types.listOf types.plugin;
       description = "List of zsh plugins.";
     };
