@@ -37,7 +37,7 @@ let
         config.settings.pkgs = lib.mkDefault pkgs;
         config.package = lib.mkDefault config.settings.wrapper;
       })
-      integratable
+      config.interfaces.integratable
       config.interfaces.sortable
     ];
   };

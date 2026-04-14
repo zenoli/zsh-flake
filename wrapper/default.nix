@@ -49,25 +49,6 @@ in
         Adds all its entries to the DAG under the name `NIX_PATH_ADDITIONS`
       '';
     };
-    interfaces = {
-      sortable = lib.mkOption {
-        type = lib.types.deferredModule;
-        readOnly = true;
-        internal = true;
-        default = {
-          options = {
-            before = lib.mkOption {
-              type = lib.types.listOf lib.types.str;
-              default = [];
-            };
-            after = lib.mkOption {
-              type = lib.types.listOf lib.types.str;
-              default = [];
-            };
-          };
-        };
-      };
-    };
   };
   config = {
     zshAliases = {
