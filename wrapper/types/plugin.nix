@@ -1,5 +1,5 @@
 { lib, ... }: 
-lib.types.submodule ({ config, ... }: {
+({ config, ... }: {
   options = {
     package = lib.mkOption {
       type = lib.types.package;
@@ -28,6 +28,14 @@ lib.types.submodule ({ config, ... }: {
       example = false;
       description = "Enable plugin ${config.name}.";
       type = lib.types.bool;
+    };
+    before = lib.mkOption { # <- before and after fields
+      type = lib.types.listOf lib.types.str;
+      default = [];
+    };
+    after = lib.mkOption { # <- so that we can sort it
+      type = lib.types.listOf lib.types.str;
+      default = [];
     };
   };
 })
