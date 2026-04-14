@@ -26,20 +26,20 @@ let
       };
     };
   });
-  sortable = {
-    options = {
-      before = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [];
-      };
-      after = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [];
-      };
-    };
-  };
+  # sortable = {
+  #   options = {
+  #     before = lib.mkOption {
+  #       type = lib.types.listOf lib.types.str;
+  #       default = [];
+  #     };
+  #     after = lib.mkOption {
+  #       type = lib.types.listOf lib.types.str;
+  #       default = [];
+  #     };
+  #   };
+  # };
 
-  integration = lib.types.submodule integratable;
+  # integration = lib.types.submodule integratable;
   wrapperIntegrationWith = wrapperModule: lib.types.submoduleWith {
     modules = [
       ({config, ... }: {
@@ -50,7 +50,7 @@ let
         config.package = lib.mkDefault config.settings.wrapper;
       })
       integratable
-      sortable
+      config.interfaces.sortable
     ];
   };
   mkWrapperIntegrationOption = wrapperModule: lib.mkOption {
@@ -79,7 +79,7 @@ in
     integrations = lib.mkOption {
       default = {};
       type = lib.types.submodule ({ config, ...}: {
-        freeformType = lib.types.attrsOf integration;
+        freeformType = with lib.types; attrsOf (submodule integratable);
         options = {
           direnv = mkWrapperIntegrationOption wlib.wrapperModules.direnv;
         };
