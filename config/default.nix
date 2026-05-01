@@ -1,8 +1,14 @@
 { pkgs, config, wlib, lib, ... }: {
   imports = [ ./plugins.nix ];
-  prompts.powerlevel10k = {
-    enable = true;
-    preset = "lean";
+  prompts = {
+    powerlevel10k = {
+      enable = true;
+      preset = "lean";
+    };
+    # starship = {
+    #   enable = false;
+    #   preset = "pastel-powerline";
+    # };
   };
   integrations = {
     starship = {
