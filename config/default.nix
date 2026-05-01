@@ -1,12 +1,15 @@
 { pkgs, config, wlib, lib, ... }: {
   imports = [ ./plugins.nix ];
   prompts.powerlevel10k = {
-    enable = true;
+    enable = false;
     preset = "lean";
   };
   integrations = {
     starship = {
-      enable = lib.mkDefault false;
+      enable = lib.mkDefault true;
+      settings = {
+        preset = "pastel-powerline";
+      };
     };
     direnv = {
       enable = lib.mkDefault true;
