@@ -1,7 +1,17 @@
 { config, wlib, lib, pkgs, ... }:
 let
   cfg = config.prompts.powerlevel10k;
-  presets = [ "classic" "lean" "lean-8colors" "pure" "rainbow" "robbyrussell" ];
+  
+  presetRoot = cfg.package.src + "/config";
+  presets = lib.pipe presetRoot [
+    lib.readDir
+    (lib.filterAttrs (_: type: type == "regular"))
+    lib.attrNames
+    (map (lib.removePrefix "p10k-"))
+    (map (lib.removeSuffix ".zsh"))
+  ];
+
+  # presets [ "classic" "lean" "lean-8colors" "pure" "rainbow" "robbyrussell" ];
 in
 {
   options = {
