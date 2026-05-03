@@ -11,12 +11,6 @@
     };
   };
   integrations = {
-    # starship = {
-    #   enable = lib.mkDefault false;
-    #   settings = {
-    #     preset = "pastel-powerline";
-    #   };
-    # };
     direnv = {
       enable = lib.mkDefault true;
       settings = {
