@@ -42,7 +42,6 @@ in
         freeformType = with lib.types; attrsOf (submodule top.config.interfaces.integratable);
         options = {
           direnv = mkWrapperIntegrationOption wlib.wrapperModules.direnv;
-          # starship = mkWrapperIntegrationOption wlib.wrapperModules.starship;
         };
       });
     };
@@ -51,7 +50,6 @@ in
       internal = true;
       readOnly = true;
       default = name: lib.elem name (lib.pipe enabledIntegrations [
-        # lib.attrValues
         (lib.map (p: lib.getName p.package))
       ]);
     };
@@ -68,9 +66,9 @@ in
           else
             initCmd
       );
-      # fzf.init = builtins.trace zshViModeInstalled (lib.mkDefault (exe: ''source <(${exe} --zsh)''));
       starship.init = lib.mkDefault (exe: ''eval "$(${exe} init zsh)"'');
-      # TODO: Only set init if powerlevel10k is enabled and direnv is enabled
+      # Only set init if powerlevel10k is disabled and direnv is enabled
+      # powerlevel10k has its own special way of initializing direnv
       direnv.init = lib.mkIf (!config.prompts.powerlevel10k.enable)
         (lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"''));
 
