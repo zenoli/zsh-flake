@@ -2,21 +2,21 @@
   imports = [ ./plugins.nix ];
   prompts = {
     powerlevel10k = {
-      enable = true;
+      enable = false;
       preset = "lean";
     };
-    # starship = {
-    #   enable = false;
-    #   preset = "pastel-powerline";
-    # };
+    starship = {
+      enable = true;
+      preset = ["pastel-powerline" ];
+    };
   };
   integrations = {
-    starship = {
-      enable = lib.mkDefault false;
-      settings = {
-        preset = "pastel-powerline";
-      };
-    };
+    # starship = {
+    #   enable = lib.mkDefault false;
+    #   settings = {
+    #     preset = "pastel-powerline";
+    #   };
+    # };
     direnv = {
       enable = lib.mkDefault true;
       settings = {

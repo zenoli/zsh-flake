@@ -1,6 +1,20 @@
 { config, wlib, lib, pkgs, ... }:
 let
   cfg = config.prompts.powerlevel10k;
+  promptIntegrationWith = wrapperModule: wlib.types.subWrapperModuleWith {
+    modules = [
+      wrapperModule
+      config.interfaces.integratable2
+    ];
+  };
+
+  mkPromptIntegrationOption = wrapperModule: lib.mkOption {
+    default = { 
+      inherit pkgs;
+      package = config.wrapper;
+    };
+    type = promptIntegrationWith wrapperModule;
+  };
   
   presetRoot = cfg.package.src + "/config";
   presets = lib.pipe presetRoot [
@@ -16,6 +30,7 @@ in
 {
   options = {
     prompts = {
+      starship = mkPromptIntegrationOption wlib.wrapperModules.starship;
       powerlevel10k = {
         enable = lib.mkEnableOption "powerlevel10k prompt";
         package = lib.mkPackageOption pkgs "zsh-powerlevel10k" {};
@@ -50,6 +65,11 @@ in
         '';
       }
     ];
+    prompts.starship.pkgs = pkgs;
+    integrations.starship = {
+      enable = config.prompts.starship.enable;
+      package = config.prompts.starship.wrapper;
+    };
     snippets = lib.mkIf cfg.enable {
       p10kInstantPrompt = let
         instantPrompt = ''

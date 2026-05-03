@@ -42,7 +42,7 @@ in
         freeformType = with lib.types; attrsOf (submodule top.config.interfaces.integratable);
         options = {
           direnv = mkWrapperIntegrationOption wlib.wrapperModules.direnv;
-          starship = mkWrapperIntegrationOption wlib.wrapperModules.starship;
+          # starship = mkWrapperIntegrationOption wlib.wrapperModules.starship;
         };
       });
     };

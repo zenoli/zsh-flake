@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775087534,
-        "narHash": "sha256-91qqW8lhL7TLwgQWijoGBbiD4t7/q75KTi8NxjVmSmA=",
+        "lastModified": 1777678872,
+        "narHash": "sha256-EPIFsulyon7Z1vLQq5Fk64GR8L7cQsT+IPhcsukVbgk=",
         "owner": "hercules-ci",
         "repo": "flake-parts",
-        "rev": "3107b77cd68437b9a76194f0f7f9c55f2329ca5b",
+        "rev": "5250617bffd85403b14dbf43c3870e7f255d2c16",
         "type": "github"
       },
       "original": {
@@ -37,11 +37,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1777425547,
-        "narHash": "sha256-d57AbflkNfZNoFaZDzssEq1RfPoM9dLtOGI2O+N/68Q=",
+        "lastModified": 1777641297,
+        "narHash": "sha256-WNGcmeOZ8Tr9dq6ztCspYbzWFswr2mPebM9LpsfGxPk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ebc08544afa77957cc348ba72dc490ec73b87f68",
+        "rev": "c6d65881c5624c9cae5ea6cedef24699b0c0a4c0",
         "type": "github"
       },
       "original": {
@@ -66,10 +66,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1777655910,
-        "narHash": "sha256-y406u2o91BYD1qiVjIobMfPv3V7XaQ4cbJPis8augFY=",
+        "lastModified": 1777740860,
+        "narHash": "sha256-AeN4Eb1j99NRGOoy97F3XtWfIGC22YTGBf412ZezLZc=",
         "ref": "refs/heads/starship-wrapper-module",
-        "rev": "7b4f0d20f843199e655014e2cc99632075f8a9b9",
+        "rev": "36d41f12a468a46286abeca28ab8e8dae9d77d1a",
         "revCount": 728,
         "type": "git",
         "url": "file:///home/olivier/repos/nix-wrapper-modules"
