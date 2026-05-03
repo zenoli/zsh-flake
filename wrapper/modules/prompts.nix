@@ -4,7 +4,10 @@ let
   promptIntegrationWith = wrapperModule: wlib.types.subWrapperModuleWith {
     modules = [
       wrapperModule
-      config.interfaces.integratable2
+      ({ name, ... }: { 
+        options.enable = lib.mkEnableOption "${name} prompt";
+        config.pkgs = lib.mkDefault pkgs;
+      })
     ];
   };
 
@@ -65,7 +68,6 @@ in
         '';
       }
     ];
-    prompts.starship.pkgs = pkgs;
     integrations.starship = {
       enable = config.prompts.starship.enable;
       package = config.prompts.starship.wrapper;

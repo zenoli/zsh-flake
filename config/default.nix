@@ -7,7 +7,7 @@
     };
     starship = {
       enable = true;
-      preset = ["pastel-powerline" ];
+      preset = [ "pastel-powerline" ];
     };
   };
   integrations = {
