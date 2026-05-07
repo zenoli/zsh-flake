@@ -17,6 +17,10 @@ let
     after = [ name ];
     data = wlib.ignoreSpecField;
   };
+  before = name: { 
+    before = [ name ];
+    data = wlib.ignoreSpecField;
+  };
 in
 {
   imports = [ 

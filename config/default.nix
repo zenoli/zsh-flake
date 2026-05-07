@@ -6,8 +6,27 @@
       preset = "lean";
     };
     starship = {
-      enable = true;
+      enable = false;
       preset = [ "pastel-powerline" ];
+    };
+    oh-my-posh = {
+      enable = true;
+      settings = {
+        extends = ./omp.json;
+        streaming = 40;
+        blocks = [
+          {
+            type = "prompt";
+            alignment = "left";
+            segments = [
+              {
+                type = "path";
+                options.style = "letter";
+              }
+            ];
+          }
+        ];
+      };
     };
   };
   integrations = {

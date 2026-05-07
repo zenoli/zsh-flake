@@ -23,6 +23,7 @@ in
   imports = [ 
     ./powerlevel10k.nix 
     ./starship.nix 
+    ./oh-my-posh.nix
   ];
   options = {
     prompts = {
