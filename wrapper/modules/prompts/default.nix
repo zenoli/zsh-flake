@@ -27,7 +27,6 @@ in
   ];
   options = {
     prompts = {
-      # starship = cfg.install wlib.wrapperModules.starship;
       install = lib.mkOption {
         type = lib.types.raw;
         internal = true;
@@ -36,10 +35,4 @@ in
       };
     };
   };
-  # config = {
-  #   integrations.starship = {
-  #     enable = config.prompts.starship.enable;
-  #     package = config.prompts.starship.wrapper;
-  #   };
-  # };
 }
