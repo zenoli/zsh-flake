@@ -1,12 +1,18 @@
-{ config, pkgs, lib, ... }: {
-  plugins = with pkgs; [ 
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+{
+  plugins = with pkgs; [
     zsh-vi-mode
     {
       package = oh-my-zsh;
       file = "plugins/git/git.plugin.zsh";
     }
-    { 
-      package = zsh-fzf-tab; 
+    {
+      package = zsh-fzf-tab;
       name = "fzf-tab";
     }
     {
@@ -19,4 +25,3 @@
     zsh-syntax-highlighting
   ];
 }
-

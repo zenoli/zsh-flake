@@ -1,4 +1,11 @@
-{ pkgs, config, wlib, lib, ... }: {
+{
+  pkgs,
+  config,
+  wlib,
+  lib,
+  ...
+}:
+{
   imports = [ ./plugins.nix ];
   prompt = "oh-my-posh";
   prompts = {
@@ -41,4 +48,3 @@
   };
   zshSrc.directory = lib.mkDefault ./src;
 }
-

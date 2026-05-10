@@ -1,4 +1,5 @@
-{ self, inputs, ... }: {
+{ self, inputs, ... }:
+{
   flake.nixosModules = {
     zsh = inputs.wrappers.lib.mkInstallModule {
       name = "zsh";

@@ -1,7 +1,13 @@
-{ config, wlib, lib, pkgs, ... }:
+{
+  config,
+  wlib,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.completion;
-in 
+in
 {
   options = {
     completion = {

@@ -1,30 +1,37 @@
-{ config, wlib, lib, pkgs, ... }:
+{
+  config,
+  wlib,
+  lib,
+  pkgs,
+  ...
+}:
 let
   zshrc = config.pkgs.writeTextFile {
     name = "zshrc";
     destination = "/.zshrc";
     text = config.zshrcContent;
   };
-  mergedSnippets = lib.concatMapStringsSep "\n\n" 
-    (x: lib.trim ''
-    # ${x.name}
+  mergedSnippets = lib.concatMapStringsSep "\n\n" (
+    x:
+    lib.trim ''
+      # ${x.name}
 
-    ${x.data}
-    '') 
-    (wlib.dag.sortAndUnwrap { dag = config.snippets; });
+      ${x.data}
+    ''
+  ) (wlib.dag.sortAndUnwrap { dag = config.snippets; });
   types = (import ./types) { inherit pkgs lib; };
-  after = name: { 
+  after = name: {
     after = [ name ];
     data = wlib.ignoreSpecField;
   };
-  before = name: { 
+  before = name: {
     before = [ name ];
     data = wlib.ignoreSpecField;
   };
 in
 {
-  imports = [ 
-    wlib.wrapperModules.zsh 
+  imports = [
+    wlib.wrapperModules.zsh
     ./modules
   ];
   options = {
@@ -66,31 +73,34 @@ in
       plugins = after "completion";
       integrations = after "plugins";
     };
-    zshrc.content = mergedSnippets + "\n\n" +  (lib.optionalString (config.zshSrc.directory != null) ''
-      # Sources a file relative to the src directory
-      function load {
-        source "${config.zshSrc.directory}/$1"
-      }
+    zshrc.content =
+      mergedSnippets
+      + "\n\n"
+      + (lib.optionalString (config.zshSrc.directory != null) ''
+        # Sources a file relative to the src directory
+        function load {
+          source "${config.zshSrc.directory}/$1"
+        }
 
-      # Cleans up the environment
-      function cleanup {
-        unfunction load
-        # unset ZDOTDIR
-      }
-      function init {
-        load ${config.zshSrc.initFile}
-      }
-      
-      init
+        # Cleans up the environment
+        function cleanup {
+          unfunction load
+          # unset ZDOTDIR
+        }
+        function init {
+          load ${config.zshSrc.initFile}
+        }
 
-      cleanup
-    '');
+        init
+
+        cleanup
+      '');
     prefixVar = lib.toList {
       name = "NIX_PATH_ADDITIONS";
       data = [
         "PATH"
-          ":"
-          "${lib.makeBinPath config.extraPackages'}"
+        ":"
+        "${lib.makeBinPath config.extraPackages'}"
       ];
     };
   };

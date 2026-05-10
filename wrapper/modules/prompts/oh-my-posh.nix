@@ -1,4 +1,10 @@
-{ config, wlib, lib, pkgs, ... }:
+{
+  config,
+  wlib,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.prompts;
 in

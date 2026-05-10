@@ -1,15 +1,20 @@
-{ pkgs ? import <nixpkgs> }:
+{
+  pkgs ? import <nixpkgs>,
+}:
 let
   lib = pkgs.lib;
   # Function to create script
-  mkScript = name: text: let
-    script = pkgs.writeShellScriptBin name text;
-  in script;
+  mkScript =
+    name: text:
+    let
+      script = pkgs.writeShellScriptBin name text;
+    in
+    script;
 
   # Define your scripts/aliases
   scripts = [
-    (pkgs.callPackage ./scripts/ghd {})
-    (pkgs.callPackage ./scripts/p10k-configure.nix {})
+    (pkgs.callPackage ./scripts/ghd { })
+    (pkgs.callPackage ./scripts/p10k-configure.nix { })
     (pkgs.writeShellApplication {
       name = "debug-zshrc";
       runtimeInputs = with pkgs; [ neovim ];
@@ -38,7 +43,7 @@ let
       '';
     })
   ];
-in 
+in
 pkgs.mkShell {
   packages = with pkgs; [ zsh-powerlevel10k ] ++ scripts;
 }

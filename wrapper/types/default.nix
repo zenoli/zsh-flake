@@ -8,5 +8,5 @@ let
     (lib.filterAttrs (name: type: type == "regular" && name != "default.nix"))
     (lib.mapAttrs' (name: _: lib.nameValuePair (stripExtension name) (importType name)))
   ];
-in 
-  types
+in
+types

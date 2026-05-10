@@ -7,6 +7,11 @@
 }:
 writeShellApplication {
   name = "ghd";
-  runtimeInputs = [ fzf gh jq git ];
+  runtimeInputs = [
+    fzf
+    gh
+    jq
+    git
+  ];
   text = builtins.readFile ./script.sh;
 }

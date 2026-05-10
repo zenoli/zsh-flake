@@ -5,7 +5,7 @@ let
     (lib.filterAttrs (name: type: name != "default.nix"))
     (lib.mapAttrsToList (name: _: ./${name}))
   ];
-in 
+in
 {
   imports = modules;
 }

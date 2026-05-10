@@ -17,19 +17,23 @@
     };
     import-tree.url = "github:vic/import-tree";
   };
-  outputs = {
-    self,
-    nixpkgs,
-    wrappers,
-    flake-parts,
-    import-tree,
-    ...
-  }@inputs:
-  flake-parts.lib.mkFlake { inherit inputs; } ({ config, withSystem, ... }: {
-    systems = nixpkgs.lib.platforms.all;
-    imports = [ 
-      wrappers.flakeModules.wrappers
-      (inputs.import-tree ./parts)
-    ];
-  });
+  outputs =
+    {
+      self,
+      nixpkgs,
+      wrappers,
+      flake-parts,
+      import-tree,
+      ...
+    }@inputs:
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      { config, withSystem, ... }:
+      {
+        systems = nixpkgs.lib.platforms.all;
+        imports = [
+          wrappers.flakeModules.wrappers
+          (inputs.import-tree ./parts)
+        ];
+      }
+    );
 }
