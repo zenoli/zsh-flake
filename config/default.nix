@@ -11,17 +11,17 @@
     };
     oh-my-posh = {
       enable = true;
+      theme = "agnoster";
+      configFile = ./omp.json;
       settings = {
-        extends = ./omp.json;
-        streaming = 40;
         blocks = [
           {
-            type = "prompt";
             alignment = "left";
+            type = "prompt";
             segments = [
               {
-                type = "path";
-                options.style = "letter";
+                type = "git";
+                template = "boo";
               }
             ];
           }

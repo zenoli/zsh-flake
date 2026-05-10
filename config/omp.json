@@ -3,58 +3,31 @@
   "blocks": [
     {
       "alignment": "left",
+      "type": "prompt",
       "segments": [
         {
-          "foreground": "#F1FA8C",
+          "background": "#91ddff",
+          "foreground": "#100e23",
+          "powerline_symbol": "\ue0b0",
           "options": {
-            "style": "full",
-            "mapped_locations": {
-              "~/nix-config/": "󱄅 nix-config"
-            }
+            "folder_icon": "\uf115",
+            "folder_separator_icon": " \ue0b1 ",
+            "home_icon": "\ueb06",
+            "style": "agnoster"
           },
-          "template": "<#42E66C>\ueaf7 </><b>{{ .Path }}</b>",
+          "style": "powerline",
+          "template": " {{ .Path }} ",
           "type": "path"
         },
         {
-          "foreground": "#43CCEA",
-          "options": {
-            "branch_icon": ""
-          },
-          "template": "<#ffffff> \u26A1 </><b>{{ .HEAD }}</b>",
+          "background": "red",
+          "foreground": "#193549",
+          "powerline_symbol": "\ue0b0",
+          "style": "powerline",
+          "template": " {{ .HEAD }} ",
           "type": "git"
-        }
-      ],
-      "type": "prompt"
-    },
-    {
-      "alignment": "right",
-      "segments": [
-        {
-          "type": "nix-shell",
-          "style": "diamond",
-          "leading_diamond": "",
-          "trailing_diamond": "",
-          "foreground": "#ffffff",
-          "background": "blue",
-          "template": "{{ if or (eq .Type \"pure\") (eq .Type \"impure\") }}󱄅 ({{ .Type }}){{ end }}"
-        }
-      ],
-      "type": "prompt"
-    },
-    {
-      "alignment": "left",
-      "newline": true,
-      "segments": [
-        {
-          "foreground": "#FFFFFF",
-          "style": "plain",
-          "template": "󰘧 " ,
-          "type": "text"
-        }
-      ],
-      "type": "prompt"
+        }      
+      ]
     }
-  ],
-  "final_space": true,
-  "version": 4
+  ]
 }
