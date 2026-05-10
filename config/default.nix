@@ -1,16 +1,14 @@
 { pkgs, config, wlib, lib, ... }: {
   imports = [ ./plugins.nix ];
+  prompt = "oh-my-posh";
   prompts = {
     powerlevel10k = {
-      enable = false;
       preset = "lean";
     };
     starship = {
-      enable = false;
       preset = [ "pastel-powerline" ];
     };
     oh-my-posh = {
-      enable = true;
       theme = "agnoster";
       configFile = ./omp.json;
       settings = {
