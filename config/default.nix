@@ -22,7 +22,9 @@
       settings = {
         silent = true;
         nix-direnv.enable = true;
-        load_dotenv = true;
+        extraConfig = {
+          load_dotenv = true;
+        };
       };
     };
     fzf = {
