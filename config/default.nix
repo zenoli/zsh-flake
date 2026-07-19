@@ -18,7 +18,7 @@
   };
   integrations = {
     direnv = {
-      enable = lib.mkDefault false;
+      enable = lib.mkDefault true;
       settings = {
         silent = true;
         nix-direnv.enable = true;
