@@ -1,6 +1,14 @@
 { self, withSystem, ... }:
 {
   flake.wrappers = {
+    starship =
+      { pkgs, wlib, ... }:
+      {
+        imports = [ wlib.wrapperModules.starship ];
+        preset = "tokyo-night";
+        configFile = ./starship.toml;
+        settings.add_newline = false;
+      };
     direnv =
       { pkgs, wlib, ... }:
       {

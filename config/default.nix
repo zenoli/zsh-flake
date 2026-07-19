@@ -7,44 +7,28 @@
 }:
 {
   imports = [ ./plugins.nix ];
-  prompt = "oh-my-posh";
+  prompt = "powerlevel10k";
   prompts = {
     powerlevel10k = {
-      preset = "lean";
+      "p10k.zsh" = ./src/.p10k.zsh;
     };
     starship = {
-      preset = [ "pastel-powerline" ];
-    };
-    oh-my-posh = {
-      theme = "agnoster";
-      configFile = ./omp.json;
-      settings = {
-        blocks = [
-          {
-            alignment = "left";
-            type = "prompt";
-            segments = [
-              {
-                type = "git";
-                template = "boo";
-              }
-            ];
-          }
-        ];
-      };
+      preset = "pastel-powerline";
     };
   };
   integrations = {
     direnv = {
-      enable = lib.mkDefault true;
+      enable = lib.mkDefault false;
       settings = {
         silent = true;
         nix-direnv.enable = true;
+        load_dotenv = true;
       };
     };
     fzf = {
       enable = lib.mkDefault true;
     };
+    kitty.enable = false;
   };
   zshSrc.directory = lib.mkDefault ./src;
 }

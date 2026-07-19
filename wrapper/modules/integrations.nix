@@ -94,6 +94,14 @@ in
       direnv.init = lib.mkIf (!config.prompts.powerlevel10k.enable) (
         lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'')
       );
+      kitty.init = ''
+        if [[ -n "$KITTY_INSTALLATION_DIR" ]]; then
+          export KITTY_SHELL_INTEGRATION="enabled"
+          autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+          kitty-integration
+          unfunction kitty-integration
+        fi
+      '';
 
     };
     snippets.integrations = integrationConfig;
