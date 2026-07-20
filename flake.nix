@@ -32,7 +32,7 @@
         systems = nixpkgs.lib.platforms.all;
         imports = [
           wrappers.flakeModules.wrappers
-          (inputs.import-tree ./parts)
+          (import-tree ./parts)
         ];
       }
     );
