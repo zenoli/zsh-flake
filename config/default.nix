@@ -27,10 +27,11 @@
         };
       };
     };
+    devenv.enable = true;
     fzf = {
       enable = lib.mkDefault true;
     };
-    kitty.enable = false;
+    kitty.enable = true;
   };
   zshSrc.directory = lib.mkDefault ./src;
 }
