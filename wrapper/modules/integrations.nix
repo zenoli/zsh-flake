@@ -47,6 +47,7 @@ let
     ${getInitCommand integration}
   '') initializableIntegrations;
   direnvConfig = config.integrations.direnv;
+  inherit (config.utils) initScript;
 in
 {
   options = {
@@ -61,6 +62,18 @@ in
           };
         }
       );
+    };
+    utils.initScript = lib.mkOption {
+      type = lib.types.functionTo (lib.types.functionTo lib.types.package);
+      internal = true;
+      readOnly = true;
+      description = ''
+        `exe: args: drv` - Runs `exe args` at build time and stores its output.
+        Sourcing the result instead of `eval "$(exe args)"` saves a fork at
+        every shell startup.
+      '';
+      default =
+        exe: args: pkgs.runCommand "${baseNameOf exe}-init.zsh" { } "HOME=$TMPDIR ${exe} ${args} > $out";
     };
     utils.hasIntegration = lib.mkOption {
       type = lib.types.functionTo lib.types.bool;
@@ -81,20 +94,20 @@ in
       fzf.init = lib.mkDefault (
         exe:
         let
-          initCmd = "source <(${exe} --zsh)";
+          initCmd = "source ${initScript exe "--zsh"}";
         in
         if (config.utils.hasPlugin "zsh-vi-mode") then
           "zvm_after_init_commands+=('${initCmd}')"
         else
           initCmd
       );
-      starship.init = lib.mkDefault (exe: ''eval "$(${exe} init zsh)"'');
+      starship.init = lib.mkDefault (exe: "source ${initScript exe "init zsh"}");
       # Only set init if powerlevel10k is disabled and direnv is enabled
       # powerlevel10k has its own special way of initializing direnv
       direnv.init = lib.mkIf (!config.prompts.powerlevel10k.enable) (
-        lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'')
+        lib.mkDefault (exe: "source ${initScript exe "hook zsh"}")
       );
-      devenv.init = lib.mkDefault (exe: ''eval "$(${exe} hook zsh)"'');
+      devenv.init = lib.mkDefault (exe: "source ${initScript exe "hook zsh"}");
       kitty.init = ''
         if [[ -n "$KITTY_INSTALLATION_DIR" ]]; then
           export KITTY_SHELL_INTEGRATION="enabled"

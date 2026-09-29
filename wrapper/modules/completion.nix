@@ -21,7 +21,16 @@ in
               mkdir -p $zsh_cache_dir
           fi
           zcompdump_file="$zsh_cache_dir/zcompdump"
-          autoload -U compinit && compinit -d $zcompdump_file
+          autoload -U compinit
+          # The full fpath scan + security audit is slow, so only do it once a day
+          # and otherwise trust the cached dump (-C).
+          local -a stale_zcompdump=($zcompdump_file(N.mh+24))
+          if (( $#stale_zcompdump )); then
+              compinit -d $zcompdump_file && touch $zcompdump_file
+          else
+              compinit -C -d $zcompdump_file
+          fi
+          unset stale_zcompdump
         '';
       };
     };
