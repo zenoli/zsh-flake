@@ -7,7 +7,7 @@
 }:
 {
   imports = [ ./plugins.nix ];
-  prompt = "powerlevel10k";
+  prompt = "starship";
   prompts = {
     powerlevel10k = {
       "p10k.zsh" = ./src/.p10k.zsh;
@@ -27,7 +27,7 @@
         };
       };
     };
-    devenv.enable = true;
+    devenv.enable = false;
     fzf = {
       enable = lib.mkDefault true;
     };
