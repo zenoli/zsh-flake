@@ -72,8 +72,6 @@ in
     skipGlobalRC = lib.mkDefault true;
     zshAliases = {
       p = "echo $PATH | tr ':' '\n'";
-      nhs = "home-manager switch --flake \$NIXOS_CONFIG";
-      nos = "sudo nixos-rebuild switch --flake \$NIXOS_CONFIG";
       ls = "ls --color=tty";
       l = "ls -alh";
       ll = "ls -l";
