@@ -66,15 +66,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1785688069,
-        "narHash": "sha256-ec051lKCXKa/zBtygEUHqU7sT/FoJ5kk+68SJn+QUCg=",
+        "lastModified": 1791221138,
+        "narHash": "sha256-cuzggeEbZAyULs9hAUNlmAkY25qs68RIxsb9vAiQ+EQ=",
         "owner": "zenoli",
         "repo": "nix-wrapper-modules",
-        "rev": "619a07aaa97e9ac9083a68f67696edac19ed1dc6",
+        "rev": "c1733c30a79b9b9a9e1aafefb28f718b3e6b4ac8",
         "type": "github"
       },
       "original": {
         "owner": "zenoli",
+        "ref": "direnv-wrapper-module",
         "repo": "nix-wrapper-modules",
         "type": "github"
       }
