@@ -1,5 +1,7 @@
 function() {
     export HISTFILE="$zsh_state_dir/zsh_history"
+    HISTSIZE=2000
+    SAVEHIST=2000
 
     setopt extended_history
     setopt hist_ignore_all_dups

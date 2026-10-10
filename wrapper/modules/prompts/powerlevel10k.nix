@@ -74,7 +74,7 @@ in
           ''
             emulate zsh -c "$(${direnvExe} export zsh)"
             ${instantPrompt}
-            emulate zsh -c "$(${direnvExe} hook zsh)"
+            emulate zsh -c "source ${config.utils.initScript direnvExe "hook zsh"}"
           ''
         else
           instantPrompt;

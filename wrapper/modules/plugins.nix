@@ -49,10 +49,4 @@ in
     };
   };
   config.snippets.plugins = pluginConfig;
-  # This somehow causes the plugin sources (pluginPackage.src) to be fetched.
-  # Without it the sources are not downloaded to the nix store and the plugins
-  # cannot be sourced.
-  # This hack somehow tells nix that these packages are needed during runtime
-  # but I have no idea why...
-  config.drv.preBuild = "echo '${pluginConfig}'";
 }

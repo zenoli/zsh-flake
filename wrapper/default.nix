@@ -13,11 +13,15 @@ let
   };
   mergedSnippets = lib.concatMapStringsSep "\n\n" (
     x:
-    lib.trim ''
-      # ${x.name}
+    # lib.trim drops the string context, which would stop nix from building
+    # (and keeping at runtime) the store paths referenced in the snippets.
+    lib.addContextFrom x.data (
+      lib.trim ''
+        # ${x.name}
 
-      ${x.data}
-    ''
+        ${x.data}
+      ''
+    )
   ) (wlib.dag.sortAndUnwrap { dag = config.snippets; });
   types = (import ./types) { inherit pkgs lib; };
   after = name: {
@@ -48,27 +52,22 @@ in
         default = "init.zsh";
       };
     };
-    extraPackages' = lib.mkOption {
-      type = lib.types.listOf lib.types.package;
-      default = [ ];
-      description = ''
-        Like extraPackages but packages are prefixed instead of suffixed.
-
-        Additional packages to add to the wrapper's runtime PATH.
-        This is useful if the wrapped program needs additional libraries or tools to function correctly.
-
-        Adds all its entries to the DAG under the name `NIX_PATH_ADDITIONS`
-      '';
-    };
   };
   config = {
+    # The NixOS /etc/zshrc runs its own (uncached, since ZDOTDIR is read-only)
+    # compinit, promptinit, etc. which roughly doubles the startup time.
+    # Everything we need from it is re-done below or in our own snippets.
+    skipGlobalRC = lib.mkDefault true;
     zshAliases = {
       p = "echo $PATH | tr ':' '\n'";
-      nhs = "home-manager switch --flake \$NIXOS_CONFIG";
-      nos = "sudo nixos-rebuild switch --flake \$NIXOS_CONFIG";
-
+      ls = "ls --color=tty";
+      l = "ls -alh";
+      ll = "ls -l";
     };
     snippets = {
+      lsColors = lib.mkIf config.skipGlobalRC (
+        lib.mkDefault "source ${config.utils.initScript "${pkgs.coreutils}/bin/dircolors" "-b"}"
+      );
       completion = after "p10kInstantPrompt";
       plugins = after "completion";
       integrations = after "plugins";
@@ -95,13 +94,5 @@ in
 
         cleanup
       '');
-    prefixVar = lib.toList {
-      name = "NIX_PATH_ADDITIONS";
-      data = [
-        "PATH"
-        ":"
-        "${lib.makeBinPath config.extraPackages'}"
-      ];
-    };
   };
 }
