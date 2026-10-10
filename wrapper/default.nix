@@ -52,18 +52,6 @@ in
         default = "init.zsh";
       };
     };
-    extraPackages' = lib.mkOption {
-      type = lib.types.listOf lib.types.package;
-      default = [ ];
-      description = ''
-        Like extraPackages but packages are prefixed instead of suffixed.
-
-        Additional packages to add to the wrapper's runtime PATH.
-        This is useful if the wrapped program needs additional libraries or tools to function correctly.
-
-        Adds all its entries to the DAG under the name `NIX_PATH_ADDITIONS`
-      '';
-    };
   };
   config = {
     # The NixOS /etc/zshrc runs its own (uncached, since ZDOTDIR is read-only)
@@ -106,13 +94,5 @@ in
 
         cleanup
       '');
-    prefixVar = lib.toList {
-      name = "NIX_PATH_ADDITIONS";
-      data = [
-        "PATH"
-        ":"
-        "${lib.makeBinPath config.extraPackages'}"
-      ];
-    };
   };
 }

@@ -31,7 +31,10 @@
     fzf = {
       enable = lib.mkDefault true;
     };
-    kitty.enable = true;
+    kitty = {
+      enable = true;
+      install = false;
+    };
   };
   zshSrc.directory = lib.mkDefault ./src;
 }
